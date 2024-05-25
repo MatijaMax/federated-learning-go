@@ -8,9 +8,9 @@ import (
 )
 
 type InterfaceActor struct {
-	count   int
-	message string
-	//spawnedPID *actor.PID
+	count              int
+	message            string
+	spawnedAveragerPID *actor.PID
 }
 
 func (state *InterfaceActor) Receive(context actor.Context) {
@@ -19,5 +19,7 @@ func (state *InterfaceActor) Receive(context actor.Context) {
 		state.count++
 		state.message = "Input" + string(state.count)
 		fmt.Println(msg.GetSomeValue()+":", state.count)
+	case *messages.Echo:
+		fmt.Printf(msg.GetMessage() + "\n")
 	}
 }

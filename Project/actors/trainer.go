@@ -8,9 +8,10 @@ import (
 )
 
 type TrainerActor struct {
-	count   int
-	message string
-	//spawnedPID *actor.PID
+	count               int
+	message             string
+	spawnedInterfacePID *actor.PID
+	spawnedAveragerPID  *actor.PID
 }
 
 func (state *TrainerActor) Receive(context actor.Context) {
@@ -19,5 +20,8 @@ func (state *TrainerActor) Receive(context actor.Context) {
 		state.count++
 		state.message = "Input" + string(state.count)
 		fmt.Println(msg.GetSomeValue()+":", state.count)
+	case *messages.Echo:
+		fmt.Printf(msg.GetMessage() + "\n")
+
 	}
 }

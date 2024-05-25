@@ -8,9 +8,9 @@ import (
 )
 
 type AveragerActor struct {
-	count   int
-	message string
-	//spawnedPID *actor.PID
+	count             int
+	message           string
+	spawnedTrainerPID *actor.PID
 }
 
 func (state *AveragerActor) Receive(context actor.Context) {
@@ -32,5 +32,7 @@ func (state *AveragerActor) Receive(context actor.Context) {
 			case *messages.Echo:
 				state.spawnedPID = msg.GetSender()
 		*/
+	case *messages.Echo:
+		fmt.Printf(msg.GetMessage() + "\n")
 	}
 }
