@@ -7,6 +7,8 @@ import (
 	"github.com/asynkron/protoactor-go/actor"
 )
 
+type SpawnedTrainerPID struct{ PID *actor.PID }
+
 type AveragerActor struct {
 	count             int
 	message           string
@@ -34,5 +36,9 @@ func (state *AveragerActor) Receive(context actor.Context) {
 		*/
 	case *messages.Echo:
 		fmt.Printf(msg.GetMessage() + "\n")
+
+	case SpawnedTrainerPID:
+		fmt.Print("AVERAGER dobavio PID Trenera \n")
+		state.spawnedTrainerPID = msg.PID
 	}
 }

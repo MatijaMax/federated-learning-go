@@ -7,6 +7,8 @@ import (
 	"github.com/asynkron/protoactor-go/actor"
 )
 
+type SpawnedAveragerPID struct{ PID *actor.PID }
+
 type InterfaceActor struct {
 	count              int
 	message            string
@@ -21,5 +23,8 @@ func (state *InterfaceActor) Receive(context actor.Context) {
 		fmt.Println(msg.GetSomeValue()+":", state.count)
 	case *messages.Echo:
 		fmt.Printf(msg.GetMessage() + "\n")
+	case SpawnedAveragerPID:
+		fmt.Print("INTERFEJS dobavio PID Averagera \n")
+		state.spawnedAveragerPID = msg.PID
 	}
 }
