@@ -13,3 +13,7 @@ message Echo {
 message Response {
   string SomeValue = 1;
 }
+
+message TrainerWeightsMessage {
+  string NizFloatova = 1;
+}

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"project/actors"
-	"project/messages"
 	"time"
 
 	"github.com/asynkron/protoactor-go/actor"
@@ -28,9 +28,11 @@ func main() {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.InterfaceActor{} })
 			pid := context.Spawn(props)
 			interfacePid = pid
+			fmt.Print("INTERFEJS PID: ")
+			fmt.Println(interfacePid)
 			go func() {
-				message := &messages.Echo{Message: "Poruka init INTERFACE", Sender: pid}
-				context.Send(pid, message)
+				//message := &messages.Echo{Message: "Poruka init INTERFACE", Sender: pid}
+				//context.Send(pid, message)
 			}()
 
 		}
@@ -38,18 +40,22 @@ func main() {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.AveragerActor{} })
 			pid := context.Spawn(props)
 			averagerPid = pid
+			fmt.Print("AVERAGER PID: ")
+			fmt.Println(averagerPid)
 			go func() {
-				message := &messages.Echo{Message: "Poruka init AVERAGER", Sender: pid}
-				context.Send(pid, message)
+				//message := &messages.Echo{Message: "Poruka init AVERAGER", Sender: pid}
+				//context.Send(pid, message)
 			}()
 		}
 		if i == 2 {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.TrainerActor{} })
 			pid := context.Spawn(props)
 			trainerPid = pid
+			fmt.Print("TRENER PID: ")
+			fmt.Println(trainerPid)
 			go func() {
-				message := &messages.Echo{Message: "Poruka init TRAINER", Sender: pid}
-				context.Send(pid, message)
+				//message := &messages.Echo{Message: "Poruka init TRAINER", Sender: pid}
+				//context.Send(pid, message)
 			}()
 		}
 
@@ -59,6 +65,9 @@ func main() {
 	context.Send(averagerPid, actors.SpawnedTrainerPID{PID: trainerPid})
 	context.Send(trainerPid, actors.SpawnedAveragerPID{PID: averagerPid})
 	context.Send(trainerPid, actors.SpawnedInterfacePID{PID: interfacePid})
+	time.Sleep(time.Second)
+
+	//TRENER TEST
 
 	time.Sleep(time.Hour)
 

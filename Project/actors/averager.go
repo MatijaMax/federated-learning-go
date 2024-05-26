@@ -8,6 +8,7 @@ import (
 )
 
 type SpawnedTrainerPID struct{ PID *actor.PID }
+type Start struct{}
 
 type AveragerActor struct {
 	count             int
@@ -38,7 +39,12 @@ func (state *AveragerActor) Receive(context actor.Context) {
 		fmt.Printf(msg.GetMessage() + "\n")
 
 	case SpawnedTrainerPID:
-		fmt.Print("AVERAGER dobavio PID Trenera \n")
+		fmt.Println("AVERAGER dobavio PID Trenera: ", msg.PID)
 		state.spawnedTrainerPID = msg.PID
+
+	case *messages.TrainerWeightsMessage:
+		fmt.Println("JA SAM AVERAGER: " + msg.NizFloatova)
+
 	}
+
 }

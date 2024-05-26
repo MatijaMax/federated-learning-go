@@ -24,7 +24,10 @@ func (state *InterfaceActor) Receive(context actor.Context) {
 	case *messages.Echo:
 		fmt.Printf(msg.GetMessage() + "\n")
 	case SpawnedAveragerPID:
-		fmt.Print("INTERFEJS dobavio PID Averagera \n")
+		fmt.Println("INTERFEJS dobavio PID Averagera:", msg.PID)
 		state.spawnedAveragerPID = msg.PID
+	case *messages.TrainerWeightsMessage:
+		fmt.Println("JA SAM INTERFEJS: " + msg.NizFloatova)
+
 	}
 }
