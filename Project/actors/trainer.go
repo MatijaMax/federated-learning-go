@@ -27,22 +27,28 @@ type TrainerActor struct {
 type NeuralNetwork struct {
     inputNodes  int
     hiddenNodes int
+    hiddenNodes2 int
     outputNodes int
     weightsIH   [][]float64 // Weights between input and hidden layer
+    weightsHH   [][]float64 // Weights between input and hidden layer
     weightsHO   [][]float64 // Weights between hidden and output layer
     biasH       []float64   // Bias for the hidden layer
+    biasH2       []float64   // Bias for the hidden layer
     biasO       []float64   // Bias for the output layer
 }
 
 
-func NewNeuralNetwork(inputNodes, hiddenNodes, outputNodes int) *NeuralNetwork {
+func NewNeuralNetwork(inputNodes, hiddenNodes, hiddenNodes2, outputNodes int) *NeuralNetwork {
     nn := &NeuralNetwork{
         inputNodes:  inputNodes,
         hiddenNodes: hiddenNodes,
+        hiddenNodes2: hiddenNodes2,
         outputNodes: outputNodes,
         weightsIH:   make([][]float64, inputNodes),
-        weightsHO:   make([][]float64, hiddenNodes),
+        weightsHH: make([][]float64, hiddenNodes),
+        weightsHO:   make([][]float64, hiddenNodes2),
         biasH:       make([]float64, hiddenNodes),
+        biasH2: make([]float64, hiddenNodes2),
         biasO:       make([]float64, outputNodes),
     }
 
@@ -51,6 +57,12 @@ func NewNeuralNetwork(inputNodes, hiddenNodes, outputNodes int) *NeuralNetwork {
         nn.weightsIH[i] = make([]float64, hiddenNodes)
         for j := range nn.weightsIH[i] {
             nn.weightsIH[i][j] = randRange(-1, 1)
+        }
+    }
+    for i := range nn.weightsHH {
+        nn.weightsHH[i] = make([]float64, hiddenNodes2)
+        for j := range nn.weightsHH[i] {
+            nn.weightsHH[i][j] = randRange(-1, 1)
         }
     }
     for i := range nn.weightsHO {
@@ -63,6 +75,9 @@ func NewNeuralNetwork(inputNodes, hiddenNodes, outputNodes int) *NeuralNetwork {
 
     for i := range nn.biasH {
         nn.biasH[i] = randRange(-1, 1)
+    }
+    for i := range nn.biasH2 {
+        nn.biasH2[i] = randRange(-1, 1)
     }
     for i := range nn.biasO {
         nn.biasO[i] = randRange(-1, 1)
@@ -77,43 +92,6 @@ func sigmoid(x float64) float64 {
 }
 
 
-func (nn *NeuralNetwork) FeedForward(inputData []float64) []float64 {
-
-    hiddenInputs := make([]float64, nn.hiddenNodes)
-    for i := 0; i < nn.hiddenNodes; i++ {
-        sum := 0.0
-        for j := 0; j < nn.inputNodes; j++ {
-            sum += inputData[j] * nn.weightsIH[j][i]
-        }
-        hiddenInputs[i] = sum + nn.biasH[i] // Add bias
-    }
-
-
-    hiddenOutputs := make([]float64, nn.hiddenNodes)
-    for i := 0; i < nn.hiddenNodes; i++ {
-        hiddenOutputs[i] = sigmoid(hiddenInputs[i])
-    }
-
-
-    finalInputs := make([]float64, nn.outputNodes)
-    for i := 0; i < nn.outputNodes; i++ {
-        sum := 0.0
-        for j := 0; j < nn.hiddenNodes; j++ {
-            sum += hiddenOutputs[j] * nn.weightsHO[j][i]
-        }
-        finalInputs[i] = sum + nn.biasO[i] // Add bias
-    }
-
-
-    finalOutputs := make([]float64, nn.outputNodes)
-    for i := 0; i < nn.outputNodes; i++ {
-        finalOutputs[i] = sigmoid(finalInputs[i])
-    }
-
-    return finalOutputs
-}
-
-
 func randRange(min, max float64) float64 {
     return min + rand.Float64()*(max-min)
 }
@@ -125,26 +103,39 @@ func (nn *NeuralNetwork) TrainNN(inputData [][]float64, targetData [][]float64, 
 
             inputs := inputData[i]
             targets := targetData[i]
-            _, hiddenOutputs, _, finalOutputs := nn.forwardPass(inputs)
+            _, hiddenOutputs, _, finalOutputs, _, hiddenOutputs2 := nn.forwardPass(inputs)
 
 
             outputErrors := make([]float64, nn.outputNodes)
             for j := 0; j < nn.outputNodes; j++ {
                 outputErrors[j] = targets[j] - finalOutputs[j]
             }
-            hiddenErrors := make([]float64, nn.hiddenNodes)
-            for j := 0; j < nn.hiddenNodes; j++ {
+            hiddenErrors2 := make([]float64, nn.hiddenNodes2)
+            for j := 0; j < nn.hiddenNodes2; j++ {
                 errorSum := 0.0
                 for k := 0; k < nn.outputNodes; k++ {
                     errorSum += outputErrors[k] * nn.weightsHO[j][k]
+                }
+                hiddenErrors2[j] = errorSum * hiddenOutputs2[j] * (1 - hiddenOutputs2[j])
+            }
+            hiddenErrors := make([]float64, nn.hiddenNodes)
+            for j := 0; j < nn.hiddenNodes; j++ {
+                errorSum := 0.0
+                for k := range hiddenErrors2 {
+                    errorSum += hiddenErrors2[k] * nn.weightsHH[j][k]
                 }
                 hiddenErrors[j] = errorSum * hiddenOutputs[j] * (1 - hiddenOutputs[j])
             }
 
 
-            for j := 0; j < nn.hiddenNodes; j++ {
+            for j := 0; j < nn.hiddenNodes2; j++ {
                 for k := 0; k < nn.outputNodes; k++ {
-                    nn.weightsHO[j][k] += learningRate * outputErrors[k] * hiddenOutputs[j]
+                    nn.weightsHO[j][k] += learningRate * outputErrors[k] * hiddenOutputs2[j]
+                }
+            }
+            for j := 0; j < nn.hiddenNodes; j++ {
+                for k := 0; k < nn.hiddenNodes2; k++ {
+                    nn.weightsHH[j][k] += learningRate * hiddenErrors2[k] * hiddenOutputs[j]
                 }
             }
             for j := 0; j < nn.inputNodes; j++ {
@@ -157,6 +148,9 @@ func (nn *NeuralNetwork) TrainNN(inputData [][]float64, targetData [][]float64, 
             for j := 0; j < nn.outputNodes; j++ {
                 nn.biasO[j] += learningRate * outputErrors[j]
             }
+            for j := 0; j < nn.hiddenNodes2; j++ {
+                nn.biasH2[j] += learningRate * hiddenErrors2[j]
+            }
             for j := 0; j < nn.hiddenNodes; j++ {
                 nn.biasH[j] += learningRate * hiddenErrors[j]
             }
@@ -165,9 +159,11 @@ func (nn *NeuralNetwork) TrainNN(inputData [][]float64, targetData [][]float64, 
 }
 
 
-func (nn *NeuralNetwork) forwardPass(inputs []float64) ([]float64, []float64, []float64, []float64) {
+func (nn *NeuralNetwork) forwardPass(inputs []float64) ([]float64, []float64, []float64, []float64, []float64, []float64) {
     hiddenInputs := make([]float64, nn.hiddenNodes)
     hiddenOutputs := make([]float64, nn.hiddenNodes)
+    hiddenInputs2 := make([]float64, nn.hiddenNodes2)
+    hiddenOutputs2 := make([]float64, nn.hiddenNodes2)
     finalInputs := make([]float64, nn.outputNodes)
     finalOutputs := make([]float64, nn.outputNodes)
 
@@ -181,17 +177,25 @@ func (nn *NeuralNetwork) forwardPass(inputs []float64) ([]float64, []float64, []
         hiddenOutputs[i] = sigmoid(hiddenInputs[i])
     }
 
+    for i := 0; i < nn.hiddenNodes2; i++ {
+        sum := 0.0
+        for j := 0; j < nn.hiddenNodes; j++ {
+            sum += hiddenOutputs[j] * nn.weightsHH[j][i]
+        }
+        hiddenInputs2[i] = sum + nn.biasH2[i]
+        hiddenOutputs2[i] = sigmoid(hiddenInputs2[i])
+    }
 
     for i := 0; i < nn.outputNodes; i++ {
         sum := 0.0
-        for j := 0; j < nn.hiddenNodes; j++ {
-            sum += hiddenOutputs[j] * nn.weightsHO[j][i]
+        for j := 0; j < nn.hiddenNodes2; j++ {
+            sum += hiddenOutputs2[j] * nn.weightsHO[j][i]
         }
         finalInputs[i] = sum + nn.biasO[i]
         finalOutputs[i] = sigmoid(finalInputs[i])
     }
 
-    return hiddenInputs, hiddenOutputs, finalInputs, finalOutputs
+    return hiddenInputs, hiddenOutputs, finalInputs, finalOutputs, hiddenInputs2, hiddenOutputs2
 }
 
 
@@ -211,24 +215,25 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
 	// fmt.Println("Labels:", labelsIn)
 	
 
-    inputNodes := 6
-    hiddenNodes := 4
+    inputNodes := 8
+    hiddenNodes := 8
+    hiddenNodes2 := 4
     outputNodes := 1
 
     // Create a new neural network
-    nn := NewNeuralNetwork(inputNodes, hiddenNodes, outputNodes)
+    nn := NewNeuralNetwork(inputNodes, hiddenNodes, hiddenNodes2, outputNodes)
 
     // Test the feedforward function with some input data
-    input := featuresIn[9]
-    fmt.Println("Input to the neural network:", input)
-    output := nn.FeedForward(input)
-    fmt.Println("Output from the neural network:", output)
+    // input := featuresIn[9]
+    // fmt.Println("Input to the neural network:", input)
+    // output := nn.FeedForward(input)
+    // fmt.Println("Output from the neural network:", output)
 
     trainingData := featuresIn[:len(featuresIn)-20]
     targetData := labelsIn[:len(featuresIn)-20]
 
     
-    nn.TrainNN(trainingData, targetData, 3, 0.1)
+    nn.TrainNN(trainingData, targetData, 10, 0.04)
 
     // output = nn.FeedForward(input)
     // fmt.Println("Output from the neural network:", output)
@@ -238,17 +243,17 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
     validationLabels := labelsIn[len(labelsIn)-20:]
 
     recall := nn.EvaluateRecall(validationData, validationLabels, 1.0)
-    fmt.Printf("Validation Recall: %f\n", recall)
+    fmt.Printf("Validation Recall nakon prvih 10 epoha: %f\n", recall)
 
     
-    nn.TrainNN(trainingData, targetData, 100, 0.1)
+    nn.TrainNN(trainingData, targetData, 10, 0.04)
 
     // output = nn.FeedForward(input)
     // fmt.Println("Output from the neural network:", output)
 
 
     recall = nn.EvaluateRecall(validationData, validationLabels, 1.0)
-    fmt.Printf("Validation Recall: %f\n", recall)
+    fmt.Printf("Validation Recall nakon drugih 10 epoha: %f\n", recall)
 
     // fmt.Println(len(validationData), len(validationLabels))
     // fmt.Println(len(featuresIn), len(labelsIn))
@@ -271,7 +276,7 @@ func (nn *NeuralNetwork) EvaluateRecall(inputData [][]float64, targetData [][]fl
 
 
         // Forward pass
-        _, _, _, finalOutputs := nn.forwardPass(inputs)
+        _, _, _, finalOutputs, _, _ := nn.forwardPass(inputs)
         
         // fmt.Printf("%v\n%v\n%v\n",inputs, targets, finalOutputs)
         
@@ -288,7 +293,7 @@ func (nn *NeuralNetwork) EvaluateRecall(inputData [][]float64, targetData [][]fl
             allPositives++
             // fmt.Println("Dobar")
         }
-        fmt.Println(predictedLabel, targets[0])
+        fmt.Println(predictedLabel, targets[0], finalOutputs[0])
     }
 
     recall := 0.0
