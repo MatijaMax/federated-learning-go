@@ -269,7 +269,7 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
     hiddenNodes2 := 4
     outputNodes := 1
 
-    // Create a new neural network
+
     nn := NewNeuralNetwork(inputNodes, hiddenNodes, hiddenNodes2, outputNodes)
 
     // Test the feedforward function with some input data
@@ -292,24 +292,24 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
     validationLabels := labelsIn[len(labelsIn)-20:]
 
     recall := nn.EvaluateRecall(validationData, validationLabels, 1.0)
-    fmt.Printf("Validation Recall nakon prvih 10 epoha: %f\n", recall)
+    fmt.Printf("Validation Recall nakon 10 epoha: %f\n", recall)
 
     
-    nn.TrainNN(trainingData, targetData, 10, 0.04)
+    // nn.TrainNN(trainingData, targetData, 10, 0.04)
 
-    // output = nn.FeedForward(input)
-    // fmt.Println("Output from the neural network:", output)
+    // // output = nn.FeedForward(input)
+    // // fmt.Println("Output from the neural network:", output)
 
 
-    recall = nn.EvaluateRecall(validationData, validationLabels, 1.0)
-    fmt.Printf("Validation Recall nakon drugih 10 epoha: %f\n", recall)
+    // recall = nn.EvaluateRecall(validationData, validationLabels, 1.0)
+    // fmt.Printf("Validation Recall nakon drugih 10 epoha: %f\n", recall)
 
     
 
-    nn.TrainNN(trainingData, targetData, 10, 0.04)
+    // nn.TrainNN(trainingData, targetData, 10, 0.04)
 
-    recall = nn.EvaluateRecall(validationData, validationLabels, 1.0)
-    fmt.Printf("Validation Recall nakon trecih 10 epoha: %f\n", recall)
+    // recall = nn.EvaluateRecall(validationData, validationLabels, 1.0)
+    // fmt.Printf("Validation Recall nakon trecih 10 epoha: %f\n", recall)
     
     var twoDArrayProtoIH []*messages.FloatArray;
     for _, row := range nn.weightsIH {
@@ -339,9 +339,8 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
     }
 
 
-
     myMessage := &messages.TrainerWeightsMessage{
-        NizFloatova: "Saljem ti tezine prosijaku moj",
+        NizFloatova: "Saljem ti tezine",
         WeightsIH:   twoDArrayProtoIH,
         WeightsHH: twoDArrayProtoHH,
         WeightsHO:   twoDArrayProtoHO,
@@ -351,29 +350,27 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
     }
 
 
-
-	context.Send(state.spawnedInterfacePID, &messages.TrainerWeightsMessage{NizFloatova: "Saljem ti tezine interfejsu moj"})
+	context.Send(state.spawnedInterfacePID, myMessage)
 	context.Send(state.spawnedAveragerPID, myMessage)
 
 	return nil
 }
 
-func TrainAgain(context actor.Context, state *TrainerActor) []float64 {
+func TrainAgain(context actor.Context, state *TrainerActor, weightsIH, weightsHH, weightsHO [][]float64, biasH, biasH2, biasO []float64) []float64 {
 	time.Sleep(time.Second * 2)
 
+    fmt.Println("Opet treniram")
 	featuresIn, labelsIn, err := ReadDataset("../dataset/Diabetes.csv")
 	if err != nil {
 		fmt.Println("Error reading dataset:", err)
-		// return
 	}
-	
+
     inputNodes := 8
     hiddenNodes := 8
     hiddenNodes2 := 4
     outputNodes := 1
 
-    nn := NewNeuralNetwork(inputNodes, hiddenNodes, hiddenNodes2, outputNodes)
-
+    nn := NewNeuralNetworkWithWeights(inputNodes, hiddenNodes, hiddenNodes2, outputNodes, weightsIH, weightsHH, weightsHO, biasH, biasH2, biasO)
 
     trainingData := featuresIn[:len(featuresIn)-20]
     targetData := labelsIn[:len(featuresIn)-20]
@@ -386,11 +383,50 @@ func TrainAgain(context actor.Context, state *TrainerActor) []float64 {
     validationLabels := labelsIn[len(labelsIn)-20:]
 
     recall := nn.EvaluateRecall(validationData, validationLabels, 1.0)
-    fmt.Printf("Validation Recall nakon prvih 10 epoha: %f\n", recall)
+    fmt.Printf("Validation Recall nakon 10 epoha: %f\n", recall)
+
+    
+    var twoDArrayProtoIH []*messages.FloatArray;
+    for _, row := range nn.weightsIH {
+        floatArray := &messages.FloatArray{}
+        for _, value := range row {
+            floatArray.Column = append(floatArray.Column, value)
+        }
+        twoDArrayProtoIH = append(twoDArrayProtoIH, floatArray)
+    }
+
+    var twoDArrayProtoHH []*messages.FloatArray;
+    for _, row := range nn.weightsHH {
+        floatArray := &messages.FloatArray{}
+        for _, value := range row {
+            floatArray.Column = append(floatArray.Column, value)
+        }
+        twoDArrayProtoHH = append(twoDArrayProtoHH, floatArray)
+    }
+
+    var twoDArrayProtoHO []*messages.FloatArray;
+    for _, row := range nn.weightsHO {
+        floatArray := &messages.FloatArray{}
+        for _, value := range row {
+            floatArray.Column = append(floatArray.Column, value)
+        }
+        twoDArrayProtoHO = append(twoDArrayProtoHO, floatArray)
+    }
 
 
-	context.Send(state.spawnedInterfacePID, &messages.TrainerWeightsMessage{NizFloatova: "Saljem ti tezine interfejsu moj"})
-	context.Send(state.spawnedAveragerPID, &messages.TrainerWeightsMessage{NizFloatova: "Saljem ti tezine prosijaku moj"})
+    myMessage := &messages.TrainerWeightsMessage{
+        NizFloatova: "Saljem ti tezine",
+        WeightsIH:   twoDArrayProtoIH,
+        WeightsHH: twoDArrayProtoHH,
+        WeightsHO:   twoDArrayProtoHO,
+        BiasH:       nn.biasH,
+        BiasH2:     nn.biasH2,
+        BiasO:       nn.biasO,
+    }
+
+
+	context.Send(state.spawnedInterfacePID, myMessage)
+	context.Send(state.spawnedAveragerPID, myMessage)
 
 	return nil
 }
@@ -551,6 +587,33 @@ func (state *TrainerActor) Receive(context actor.Context) {
 		}
 		fmt.Printf("Start stanje je: %v \n", state.startState)
 
+    case *messages.AveragerWeightsMessage:
+        fmt.Println("ADSSSSSSSSSSSSSSS")
+        var weightsIH [][]float64
+        for _, floatArray := range msg.WeightsIH {
+            var row []float64
+            for _, value := range floatArray.Column {
+                row = append(row, value)
+            }
+            weightsIH = append(weightsIH, row)
+        }
+        var weightsHH [][]float64
+        for _, floatArray := range msg.WeightsHH {
+            var row []float64
+            for _, value := range floatArray.Column {
+                row = append(row, value)
+            }
+            weightsHH = append(weightsHH, row)
+        }
+        var weightsHO [][]float64
+        for _, floatArray := range msg.WeightsHO {
+            var row []float64
+            for _, value := range floatArray.Column {
+                row = append(row, value)
+            }
+            weightsHO = append(weightsHO, row)
+        }
+        TrainAgain(context, state, weightsIH, weightsHH, weightsHO, msg.BiasH, msg.BiasH2, msg.BiasO)
 	}
 
 }

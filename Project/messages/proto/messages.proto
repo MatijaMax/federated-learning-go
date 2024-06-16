@@ -28,3 +28,30 @@ message TrainerWeightsMessage {
   repeated double biasH2 = 6;     
   repeated double biasO = 7;    
 }
+
+message AveragerWeightsMessage {
+  repeated FloatArray weightsIH = 2;   
+  repeated FloatArray weightsHH = 3;
+  repeated FloatArray weightsHO = 4;
+  repeated double biasH = 5;
+  repeated double biasH2 = 6;     
+  repeated double biasO = 7;    
+}
+
+message InterInterfaceWeightsMessage {
+  repeated FloatArray weightsIH = 2;   
+  repeated FloatArray weightsHH = 3;
+  repeated FloatArray weightsHO = 4;
+  repeated double biasH = 5;
+  repeated double biasH2 = 6;     
+  repeated double biasO = 7;    
+}
+
+message InterfaceToAveragerWeightsMessage {
+  repeated FloatArray weightsIH = 2;   
+  repeated FloatArray weightsHH = 3;
+  repeated FloatArray weightsHO = 4;
+  repeated double biasH = 5;
+  repeated double biasH2 = 6;     
+  repeated double biasO = 7;    
+}

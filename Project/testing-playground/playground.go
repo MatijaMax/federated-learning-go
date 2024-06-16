@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"project/actors"
+	"project/messages"
 	"time"
 
 	"github.com/asynkron/protoactor-go/actor"
@@ -68,6 +69,8 @@ func main() {
 	context.Send(trainerPid, actors.SpawnedInterfacePID{PID: interfacePid})
 
 
-	time.Sleep(time.Hour)
+	time.Sleep(time.Second * 10)
+	context.Send(interfacePid, &messages.InterInterfaceWeightsMessage{})
 
+	time.Sleep(time.Hour)
 }

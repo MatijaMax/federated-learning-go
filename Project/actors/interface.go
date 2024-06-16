@@ -30,6 +30,10 @@ func (state *InterfaceActor) Receive(context actor.Context) {
 	case *messages.TrainerWeightsMessage:
 		time.Sleep(time.Second * 2)
 		fmt.Println("JA SAM INTERFEJS: " + msg.NizFloatova)
+	case *messages.InterInterfaceWeightsMessage:
+		time.Sleep(time.Second * 2)
+		fmt.Println("Interfejs: Dobio sam tezine od brace iz klastera (mozda nekad proradi)")
+		context.Send(state.spawnedAveragerPID, &messages.InterfaceToAveragerWeightsMessage{})
 
 	}
 }
