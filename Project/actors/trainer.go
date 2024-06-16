@@ -21,6 +21,7 @@ type TrainerActor struct {
 	spawnedInterfacePID *actor.PID
 	spawnedAveragerPID  *actor.PID
 	startState          bool
+    
 }
 
 
@@ -81,6 +82,54 @@ func NewNeuralNetwork(inputNodes, hiddenNodes, hiddenNodes2, outputNodes int) *N
     }
     for i := range nn.biasO {
         nn.biasO[i] = randRange(-1, 1)
+    }
+
+    return nn
+}
+
+func NewNeuralNetworkWithWeights(inputNodes, hiddenNodes, hiddenNodes2, outputNodes int, weightsIH, weightsHH, weightsHO [][]float64, biasH, biasH2, biasO []float64) *NeuralNetwork {
+    nn := &NeuralNetwork{
+        inputNodes:  inputNodes,
+        hiddenNodes: hiddenNodes,
+        hiddenNodes2: hiddenNodes2,
+        outputNodes: outputNodes,
+        weightsIH:   make([][]float64, inputNodes),
+        weightsHH: make([][]float64, hiddenNodes),
+        weightsHO:   make([][]float64, hiddenNodes2),
+        biasH:       make([]float64, hiddenNodes),
+        biasH2: make([]float64, hiddenNodes2),
+        biasO:       make([]float64, outputNodes),
+    }
+
+
+    for i := range nn.weightsIH {
+        nn.weightsIH[i] = make([]float64, hiddenNodes)
+        for j := range nn.weightsIH[i] {
+            nn.weightsIH[i][j] = weightsIH[i][j]
+        }
+    }
+    for i := range nn.weightsHH {
+        nn.weightsHH[i] = make([]float64, hiddenNodes2)
+        for j := range nn.weightsHH[i] {
+            nn.weightsHH[i][j] = weightsHH[i][j]
+        }
+    }
+    for i := range nn.weightsHO {
+        nn.weightsHO[i] = make([]float64, outputNodes)
+        for j := range nn.weightsHO[i] {
+            nn.weightsHO[i][j] = weightsHO[i][j]
+        }
+    }
+
+
+    for i := range nn.biasH {
+        nn.biasH[i] = biasH[i]
+    }
+    for i := range nn.biasH2 {
+        nn.biasH2[i] = biasH2[i]
+    }
+    for i := range nn.biasO {
+        nn.biasO[i] = biasO[i]
     }
 
     return nn
@@ -255,8 +304,89 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
     recall = nn.EvaluateRecall(validationData, validationLabels, 1.0)
     fmt.Printf("Validation Recall nakon drugih 10 epoha: %f\n", recall)
 
-    // fmt.Println(len(validationData), len(validationLabels))
-    // fmt.Println(len(featuresIn), len(labelsIn))
+    
+
+    nn.TrainNN(trainingData, targetData, 10, 0.04)
+
+    recall = nn.EvaluateRecall(validationData, validationLabels, 1.0)
+    fmt.Printf("Validation Recall nakon trecih 10 epoha: %f\n", recall)
+    
+    var twoDArrayProtoIH []*messages.FloatArray;
+    for _, row := range nn.weightsIH {
+        floatArray := &messages.FloatArray{}
+        for _, value := range row {
+            floatArray.Column = append(floatArray.Column, value)
+        }
+        twoDArrayProtoIH = append(twoDArrayProtoIH, floatArray)
+    }
+
+    var twoDArrayProtoHH []*messages.FloatArray;
+    for _, row := range nn.weightsHH {
+        floatArray := &messages.FloatArray{}
+        for _, value := range row {
+            floatArray.Column = append(floatArray.Column, value)
+        }
+        twoDArrayProtoHH = append(twoDArrayProtoHH, floatArray)
+    }
+
+    var twoDArrayProtoHO []*messages.FloatArray;
+    for _, row := range nn.weightsHO {
+        floatArray := &messages.FloatArray{}
+        for _, value := range row {
+            floatArray.Column = append(floatArray.Column, value)
+        }
+        twoDArrayProtoHO = append(twoDArrayProtoHO, floatArray)
+    }
+
+
+
+    myMessage := &messages.TrainerWeightsMessage{
+        NizFloatova: "Saljem ti tezine prosijaku moj",
+        WeightsIH:   twoDArrayProtoIH,
+        WeightsHH: twoDArrayProtoHH,
+        WeightsHO:   twoDArrayProtoHO,
+        BiasH:       nn.biasH,
+        BiasH2:  nn.biasH2,
+        BiasO:       nn.biasO,
+    }
+
+
+
+	context.Send(state.spawnedInterfacePID, &messages.TrainerWeightsMessage{NizFloatova: "Saljem ti tezine interfejsu moj"})
+	context.Send(state.spawnedAveragerPID, myMessage)
+
+	return nil
+}
+
+func TrainAgain(context actor.Context, state *TrainerActor) []float64 {
+	time.Sleep(time.Second * 2)
+
+	featuresIn, labelsIn, err := ReadDataset("../dataset/Diabetes.csv")
+	if err != nil {
+		fmt.Println("Error reading dataset:", err)
+		// return
+	}
+	
+    inputNodes := 8
+    hiddenNodes := 8
+    hiddenNodes2 := 4
+    outputNodes := 1
+
+    nn := NewNeuralNetwork(inputNodes, hiddenNodes, hiddenNodes2, outputNodes)
+
+
+    trainingData := featuresIn[:len(featuresIn)-20]
+    targetData := labelsIn[:len(featuresIn)-20]
+
+    
+    nn.TrainNN(trainingData, targetData, 10, 0.04)
+
+
+    validationData := featuresIn[len(featuresIn)-20:]
+    validationLabels := labelsIn[len(labelsIn)-20:]
+
+    recall := nn.EvaluateRecall(validationData, validationLabels, 1.0)
+    fmt.Printf("Validation Recall nakon prvih 10 epoha: %f\n", recall)
 
 
 	context.Send(state.spawnedInterfacePID, &messages.TrainerWeightsMessage{NizFloatova: "Saljem ti tezine interfejsu moj"})
@@ -264,7 +394,6 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
 
 	return nil
 }
-
 
 func (nn *NeuralNetwork) EvaluateRecall(inputData [][]float64, targetData [][]float64, positiveLabel float64) float64 {
     truePositives := 0

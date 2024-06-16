@@ -3,17 +3,24 @@ package actors
 import (
 	"fmt"
 	"project/messages"
+	"time"
 
 	"github.com/asynkron/protoactor-go/actor"
 )
 
 type SpawnedTrainerPID struct{ PID *actor.PID }
-type Start struct{}
 
 type AveragerActor struct {
 	count             int
 	message           string
 	spawnedTrainerPID *actor.PID
+	weightsIH   [][]float64 // Weights between input and hidden layer
+    weightsHH   [][]float64 // Weights between input and hidden layer
+    weightsHO   [][]float64 // Weights between hidden and output layer
+    biasH       []float64   // Bias for the hidden layer
+    biasH2       []float64   // Bias for the hidden layer
+    biasO       []float64   // Bias for the output layer
+	
 }
 
 func (state *AveragerActor) Receive(context actor.Context) {
@@ -43,7 +50,40 @@ func (state *AveragerActor) Receive(context actor.Context) {
 		state.spawnedTrainerPID = msg.PID
 
 	case *messages.TrainerWeightsMessage:
+		time.Sleep(time.Second * 2)
+		for _, floatArray := range msg.WeightsIH {
+			var row []float64
+			for _, value := range floatArray.Column {
+				row = append(row, value)
+			}
+			state.weightsIH = append(state.weightsIH, row)
+		}
+		
+		for _, floatArray := range msg.WeightsHH {
+			var row []float64
+			for _, value := range floatArray.Column {
+				row = append(row, value)
+			}
+			state.weightsHH = append(state.weightsHH, row)
+		}
+
+		for _, floatArray := range msg.WeightsHO {
+			var row []float64
+			for _, value := range floatArray.Column {
+				row = append(row, value)
+			}
+			state.weightsHO = append(state.weightsHO, row)
+		}
+
+		state.biasH = msg.BiasH
+		state.biasH2 = msg.BiasH2
+		state.biasO = msg.BiasO
 		fmt.Println("JA SAM AVERAGER: " + msg.NizFloatova)
+		for i := range state.weightsIH {
+			for j := range state.weightsIH[i] {
+				fmt.Print(state.weightsIH[i][j])
+			}
+		}
 
 	}
 

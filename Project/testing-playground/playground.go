@@ -23,7 +23,7 @@ func main() {
 	var trainerPid *actor.PID = nil
 
 	// Spawn three local actors
-	for i := 0; i < 7; i++ {
+	for i := 0; i < 3; i++ {
 		if i == 0 {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.InterfaceActor{} })
 			pid := context.Spawn(props)
@@ -61,13 +61,12 @@ func main() {
 
 	}
 
+	time.Sleep(time.Second)
 	context.Send(interfacePid, actors.SpawnedAveragerPID{PID: averagerPid})
 	context.Send(averagerPid, actors.SpawnedTrainerPID{PID: trainerPid})
 	context.Send(trainerPid, actors.SpawnedAveragerPID{PID: averagerPid})
 	context.Send(trainerPid, actors.SpawnedInterfacePID{PID: interfacePid})
-	time.Sleep(time.Second)
 
-	//TRENER TEST
 
 	time.Sleep(time.Hour)
 

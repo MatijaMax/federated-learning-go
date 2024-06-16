@@ -3,6 +3,7 @@ package actors
 import (
 	"fmt"
 	"project/messages"
+	"time"
 
 	"github.com/asynkron/protoactor-go/actor"
 )
@@ -27,6 +28,7 @@ func (state *InterfaceActor) Receive(context actor.Context) {
 		fmt.Println("INTERFEJS dobavio PID Averagera:", msg.PID)
 		state.spawnedAveragerPID = msg.PID
 	case *messages.TrainerWeightsMessage:
+		time.Sleep(time.Second * 2)
 		fmt.Println("JA SAM INTERFEJS: " + msg.NizFloatova)
 
 	}

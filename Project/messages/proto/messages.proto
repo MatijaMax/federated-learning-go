@@ -14,6 +14,17 @@ message Response {
   string SomeValue = 1;
 }
 
+
+message FloatArray {
+  repeated double column = 1;
+}
+
 message TrainerWeightsMessage {
   string NizFloatova = 1;
+  repeated FloatArray weightsIH = 2;   
+  repeated FloatArray weightsHH = 3;
+  repeated FloatArray weightsHO = 4;
+  repeated double biasH = 5;
+  repeated double biasH2 = 6;     
+  repeated double biasO = 7;    
 }
