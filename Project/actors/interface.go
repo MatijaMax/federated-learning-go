@@ -8,14 +8,11 @@ import (
 	"github.com/asynkron/protoactor-go/actor"
 )
 
-type SpawnedAveragerPID struct{ PID *actor.PID }
-
-type RemoteIntegerPID struct{ PID *actor.PID }
-
 type InterfaceActor struct {
 	count              int
 	message            string
 	spawnedAveragerPID *actor.PID
+	myPid              *actor.PID
 	queueInterfaces    []*actor.PID
 }
 
@@ -26,15 +23,18 @@ func (state *InterfaceActor) Receive(context actor.Context) {
 		state.message = "Input" + string(state.count)
 		fmt.Println(msg.GetSomeValue()+":", state.count)
 
-	case RemoteIntegerPID:
-		fmt.Println("INTERFEJS dobavio PID Remote Sistema:", msg.PID)
-		state.queueInterfaces = append(state.queueInterfaces, msg.PID)
+	case *messages.RemoteIntegerPID:
+		fmt.Println("INTERFEJS dobavio PID Remote Sistema:", msg.YourInterfacePid)
+		fmt.Println("INTERFEJS REMOTE STARTERA:", msg.AllInterfacePids[0])
+		// fmt.Println("INTERFEJS imaaa PID Averagera:", state.spawnedAveragerPID.Address)
+		state.myPid = msg.YourInterfacePid
+		state.queueInterfaces = msg.AllInterfacePids
 
 	case *messages.Echo:
 		fmt.Printf(msg.GetMessage() + "\n")
-	case SpawnedAveragerPID:
-		fmt.Println("INTERFEJS dobavio PID Averagera:", msg.PID)
-		state.spawnedAveragerPID = msg.PID
+	case *messages.SpawnedAveragerPID:
+		fmt.Println("INTERFEJS dobavio PID Averagera:", msg.ThePid)
+		state.spawnedAveragerPID = msg.ThePid
 	case *messages.TrainerWeightsMessage:
 		time.Sleep(time.Second * 2)
 		fmt.Println("JA SAM INTERFEJS: " + msg.NizFloatova)

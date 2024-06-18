@@ -528,6 +528,202 @@ func (x *InterfaceToAveragerWeightsMessage) GetBiasO() []float64 {
 	return nil
 }
 
+type RemoteIntegerPID struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	YourInterfacePid *actor.PID   `protobuf:"bytes,1,opt,name=yourInterfacePid,proto3" json:"yourInterfacePid,omitempty"`
+	AllInterfacePids []*actor.PID `protobuf:"bytes,2,rep,name=allInterfacePids,proto3" json:"allInterfacePids,omitempty"`
+}
+
+func (x *RemoteIntegerPID) Reset() {
+	*x = RemoteIntegerPID{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_messages_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RemoteIntegerPID) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RemoteIntegerPID) ProtoMessage() {}
+
+func (x *RemoteIntegerPID) ProtoReflect() protoreflect.Message {
+	mi := &file_messages_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RemoteIntegerPID.ProtoReflect.Descriptor instead.
+func (*RemoteIntegerPID) Descriptor() ([]byte, []int) {
+	return file_messages_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *RemoteIntegerPID) GetYourInterfacePid() *actor.PID {
+	if x != nil {
+		return x.YourInterfacePid
+	}
+	return nil
+}
+
+func (x *RemoteIntegerPID) GetAllInterfacePids() []*actor.PID {
+	if x != nil {
+		return x.AllInterfacePids
+	}
+	return nil
+}
+
+type SpawnedAveragerPID struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ThePid *actor.PID `protobuf:"bytes,1,opt,name=thePid,proto3" json:"thePid,omitempty"`
+}
+
+func (x *SpawnedAveragerPID) Reset() {
+	*x = SpawnedAveragerPID{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_messages_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SpawnedAveragerPID) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpawnedAveragerPID) ProtoMessage() {}
+
+func (x *SpawnedAveragerPID) ProtoReflect() protoreflect.Message {
+	mi := &file_messages_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpawnedAveragerPID.ProtoReflect.Descriptor instead.
+func (*SpawnedAveragerPID) Descriptor() ([]byte, []int) {
+	return file_messages_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *SpawnedAveragerPID) GetThePid() *actor.PID {
+	if x != nil {
+		return x.ThePid
+	}
+	return nil
+}
+
+type SpawnedTrainerPID struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ThePid *actor.PID `protobuf:"bytes,1,opt,name=thePid,proto3" json:"thePid,omitempty"`
+}
+
+func (x *SpawnedTrainerPID) Reset() {
+	*x = SpawnedTrainerPID{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_messages_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SpawnedTrainerPID) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpawnedTrainerPID) ProtoMessage() {}
+
+func (x *SpawnedTrainerPID) ProtoReflect() protoreflect.Message {
+	mi := &file_messages_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpawnedTrainerPID.ProtoReflect.Descriptor instead.
+func (*SpawnedTrainerPID) Descriptor() ([]byte, []int) {
+	return file_messages_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *SpawnedTrainerPID) GetThePid() *actor.PID {
+	if x != nil {
+		return x.ThePid
+	}
+	return nil
+}
+
+type SpawnedInterfacePID struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ThePid *actor.PID `protobuf:"bytes,1,opt,name=thePid,proto3" json:"thePid,omitempty"`
+}
+
+func (x *SpawnedInterfacePID) Reset() {
+	*x = SpawnedInterfacePID{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_messages_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SpawnedInterfacePID) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpawnedInterfacePID) ProtoMessage() {}
+
+func (x *SpawnedInterfacePID) ProtoReflect() protoreflect.Message {
+	mi := &file_messages_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpawnedInterfacePID.ProtoReflect.Descriptor instead.
+func (*SpawnedInterfacePID) Descriptor() ([]byte, []int) {
+	return file_messages_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *SpawnedInterfacePID) GetThePid() *actor.PID {
+	if x != nil {
+		return x.ThePid
+	}
+	return nil
+}
+
 var File_messages_proto protoreflect.FileDescriptor
 
 var file_messages_proto_rawDesc = []byte{
@@ -608,9 +804,28 @@ var file_messages_proto_rawDesc = []byte{
 	0x18, 0x05, 0x20, 0x03, 0x28, 0x01, 0x52, 0x05, 0x62, 0x69, 0x61, 0x73, 0x48, 0x12, 0x16, 0x0a,
 	0x06, 0x62, 0x69, 0x61, 0x73, 0x48, 0x32, 0x18, 0x06, 0x20, 0x03, 0x28, 0x01, 0x52, 0x06, 0x62,
 	0x69, 0x61, 0x73, 0x48, 0x32, 0x12, 0x14, 0x0a, 0x05, 0x62, 0x69, 0x61, 0x73, 0x4f, 0x18, 0x07,
-	0x20, 0x03, 0x28, 0x01, 0x52, 0x05, 0x62, 0x69, 0x61, 0x73, 0x4f, 0x42, 0x11, 0x5a, 0x0f, 0x76,
-	0x65, 0x7a, 0x62, 0x65, 0x33, 0x2f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x20, 0x03, 0x28, 0x01, 0x52, 0x05, 0x62, 0x69, 0x61, 0x73, 0x4f, 0x22, 0x82, 0x01, 0x0a, 0x10,
+	0x52, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x49, 0x6e, 0x74, 0x65, 0x67, 0x65, 0x72, 0x50, 0x49, 0x44,
+	0x12, 0x36, 0x0a, 0x10, 0x79, 0x6f, 0x75, 0x72, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63,
+	0x65, 0x50, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x61, 0x63, 0x74,
+	0x6f, 0x72, 0x2e, 0x50, 0x49, 0x44, 0x52, 0x10, 0x79, 0x6f, 0x75, 0x72, 0x49, 0x6e, 0x74, 0x65,
+	0x72, 0x66, 0x61, 0x63, 0x65, 0x50, 0x69, 0x64, 0x12, 0x36, 0x0a, 0x10, 0x61, 0x6c, 0x6c, 0x49,
+	0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x50, 0x69, 0x64, 0x73, 0x18, 0x02, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x2e, 0x50, 0x49, 0x44, 0x52, 0x10,
+	0x61, 0x6c, 0x6c, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x50, 0x69, 0x64, 0x73,
+	0x22, 0x38, 0x0a, 0x12, 0x53, 0x70, 0x61, 0x77, 0x6e, 0x65, 0x64, 0x41, 0x76, 0x65, 0x72, 0x61,
+	0x67, 0x65, 0x72, 0x50, 0x49, 0x44, 0x12, 0x22, 0x0a, 0x06, 0x74, 0x68, 0x65, 0x50, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x2e, 0x50,
+	0x49, 0x44, 0x52, 0x06, 0x74, 0x68, 0x65, 0x50, 0x69, 0x64, 0x22, 0x37, 0x0a, 0x11, 0x53, 0x70,
+	0x61, 0x77, 0x6e, 0x65, 0x64, 0x54, 0x72, 0x61, 0x69, 0x6e, 0x65, 0x72, 0x50, 0x49, 0x44, 0x12,
+	0x22, 0x0a, 0x06, 0x74, 0x68, 0x65, 0x50, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x0a, 0x2e, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x2e, 0x50, 0x49, 0x44, 0x52, 0x06, 0x74, 0x68, 0x65,
+	0x50, 0x69, 0x64, 0x22, 0x39, 0x0a, 0x13, 0x53, 0x70, 0x61, 0x77, 0x6e, 0x65, 0x64, 0x49, 0x6e,
+	0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x50, 0x49, 0x44, 0x12, 0x22, 0x0a, 0x06, 0x74, 0x68,
+	0x65, 0x50, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x61, 0x63, 0x74,
+	0x6f, 0x72, 0x2e, 0x50, 0x49, 0x44, 0x52, 0x06, 0x74, 0x68, 0x65, 0x50, 0x69, 0x64, 0x42, 0x11,
+	0x5a, 0x0f, 0x76, 0x65, 0x7a, 0x62, 0x65, 0x33, 0x2f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -625,7 +840,7 @@ func file_messages_proto_rawDescGZIP() []byte {
 	return file_messages_proto_rawDescData
 }
 
-var file_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_messages_proto_goTypes = []interface{}{
 	(*Echo)(nil),                              // 0: messages.Echo
 	(*Response)(nil),                          // 1: messages.Response
@@ -634,10 +849,14 @@ var file_messages_proto_goTypes = []interface{}{
 	(*AveragerWeightsMessage)(nil),            // 4: messages.AveragerWeightsMessage
 	(*InterInterfaceWeightsMessage)(nil),      // 5: messages.InterInterfaceWeightsMessage
 	(*InterfaceToAveragerWeightsMessage)(nil), // 6: messages.InterfaceToAveragerWeightsMessage
-	(*actor.PID)(nil),                         // 7: actor.PID
+	(*RemoteIntegerPID)(nil),                  // 7: messages.RemoteIntegerPID
+	(*SpawnedAveragerPID)(nil),                // 8: messages.SpawnedAveragerPID
+	(*SpawnedTrainerPID)(nil),                 // 9: messages.SpawnedTrainerPID
+	(*SpawnedInterfacePID)(nil),               // 10: messages.SpawnedInterfacePID
+	(*actor.PID)(nil),                         // 11: actor.PID
 }
 var file_messages_proto_depIdxs = []int32{
-	7,  // 0: messages.Echo.Sender:type_name -> actor.PID
+	11, // 0: messages.Echo.Sender:type_name -> actor.PID
 	2,  // 1: messages.TrainerWeightsMessage.weightsIH:type_name -> messages.FloatArray
 	2,  // 2: messages.TrainerWeightsMessage.weightsHH:type_name -> messages.FloatArray
 	2,  // 3: messages.TrainerWeightsMessage.weightsHO:type_name -> messages.FloatArray
@@ -650,11 +869,16 @@ var file_messages_proto_depIdxs = []int32{
 	2,  // 10: messages.InterfaceToAveragerWeightsMessage.weightsIH:type_name -> messages.FloatArray
 	2,  // 11: messages.InterfaceToAveragerWeightsMessage.weightsHH:type_name -> messages.FloatArray
 	2,  // 12: messages.InterfaceToAveragerWeightsMessage.weightsHO:type_name -> messages.FloatArray
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	11, // 13: messages.RemoteIntegerPID.yourInterfacePid:type_name -> actor.PID
+	11, // 14: messages.RemoteIntegerPID.allInterfacePids:type_name -> actor.PID
+	11, // 15: messages.SpawnedAveragerPID.thePid:type_name -> actor.PID
+	11, // 16: messages.SpawnedTrainerPID.thePid:type_name -> actor.PID
+	11, // 17: messages.SpawnedInterfacePID.thePid:type_name -> actor.PID
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_messages_proto_init() }
@@ -747,6 +971,54 @@ func file_messages_proto_init() {
 				return nil
 			}
 		}
+		file_messages_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RemoteIntegerPID); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_messages_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SpawnedAveragerPID); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_messages_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SpawnedTrainerPID); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_messages_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SpawnedInterfacePID); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -754,7 +1026,7 @@ func file_messages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_messages_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

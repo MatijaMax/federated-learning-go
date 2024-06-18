@@ -55,3 +55,24 @@ message InterfaceToAveragerWeightsMessage {
   repeated double biasH2 = 6;     
   repeated double biasO = 7;    
 }
+
+message RemoteIntegerPID 
+{
+   actor.PID yourInterfacePid = 1;
+   repeated actor.PID allInterfacePids = 2;
+}
+
+message SpawnedAveragerPID 
+{
+   actor.PID thePid = 1;
+}
+
+message SpawnedTrainerPID 
+{
+   actor.PID thePid = 1;
+}
+
+message SpawnedInterfacePID 
+{
+   actor.PID thePid = 1;
+}

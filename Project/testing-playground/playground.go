@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"project/actors"
 	"project/messages"
+
+	//"project/messages"
 	"time"
 
 	"github.com/asynkron/protoactor-go/actor"
@@ -23,54 +25,81 @@ func main() {
 	var averagerPid *actor.PID = nil
 	var trainerPid *actor.PID = nil
 
+	var interfacePidRemote *actor.PID = nil
+	var averagerPidRemote *actor.PID = nil
+	var trainerPidRemote *actor.PID = nil
+	var interfacePids []*actor.PID
+
 	// Spawn three local actors
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 6; i++ {
 		if i == 0 {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.InterfaceActor{} })
 			pid := context.Spawn(props)
 			interfacePid = pid
+			interfacePids = append(interfacePids, interfacePid)
 			fmt.Print("INTERFEJS PID: ")
 			fmt.Println(interfacePid)
-			go func() {
-				//message := &messages.Echo{Message: "Poruka init INTERFACE", Sender: pid}
-				//context.Send(pid, message)
-			}()
 
 		}
 		if i == 1 {
+			spawnResponse, err := remoting.SpawnNamed("127.0.0.1:8091", "myactor1", "interfejs1", time.Second*12)
+			if err != nil {
+				panic(err)
+				return
+			}
+			interfacePidRemote = spawnResponse.Pid
+			interfacePids = append(interfacePids, interfacePidRemote)
+		}
+		if i == 2 {
+			spawnResponse, err := remoting.SpawnNamed("127.0.0.1:8091", "myactor2", "trainer1", time.Second*12)
+			if err != nil {
+				panic(err)
+				return
+			}
+			trainerPidRemote = spawnResponse.Pid
+		}
+		if i == 3 {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.AveragerActor{} })
 			pid := context.Spawn(props)
 			averagerPid = pid
 			fmt.Print("AVERAGER PID: ")
 			fmt.Println(averagerPid)
-			go func() {
-				//message := &messages.Echo{Message: "Poruka init AVERAGER", Sender: pid}
-				//context.Send(pid, message)
-			}()
+
 		}
-		if i == 2 {
+		if i == 4 {
+			spawnResponse, err := remoting.SpawnNamed("127.0.0.1:8091", "myactor3", "averager1", time.Second*12)
+			if err != nil {
+				panic(err)
+				return
+			}
+			averagerPidRemote = spawnResponse.Pid
+		}
+		if i == 5 {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.TrainerActor{} })
 			pid := context.Spawn(props)
 			trainerPid = pid
 			fmt.Print("TRENER PID: ")
 			fmt.Println(trainerPid)
-			go func() {
-				//message := &messages.Echo{Message: "Poruka init TRAINER", Sender: pid}
-				//context.Send(pid, message)
-			}()
+
 		}
 
 	}
 
-	time.Sleep(time.Second)
-	context.Send(interfacePid, actors.SpawnedAveragerPID{PID: averagerPid})
-	context.Send(averagerPid, actors.SpawnedTrainerPID{PID: trainerPid})
-	context.Send(trainerPid, actors.SpawnedAveragerPID{PID: averagerPid})
-	context.Send(trainerPid, actors.SpawnedInterfacePID{PID: interfacePid})
+	time.Sleep(time.Second * 1)
+	context.Send(interfacePid, &messages.SpawnedAveragerPID{ThePid: averagerPid})
+	context.Send(averagerPid, &messages.SpawnedTrainerPID{ThePid: trainerPid})
+	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid})
+	context.Send(trainerPid, &messages.SpawnedInterfacePID{ThePid: interfacePid})
 
+	context.Send(interfacePidRemote, &messages.RemoteIntegerPID{YourInterfacePid: interfacePidRemote, AllInterfacePids: interfacePids})
 
-	time.Sleep(time.Second * 10)
-	context.Send(interfacePid, &messages.InterInterfaceWeightsMessage{})
+	context.Send(interfacePidRemote, &messages.SpawnedAveragerPID{ThePid: averagerPidRemote})
+	context.Send(averagerPidRemote, &messages.SpawnedTrainerPID{ThePid: trainerPidRemote})
+	context.Send(trainerPidRemote, &messages.SpawnedAveragerPID{ThePid: averagerPidRemote})
+	context.Send(trainerPidRemote, &messages.SpawnedInterfacePID{ThePid: interfacePidRemote})
+
+	// time.Sleep(time.Second * 10)
+	// context.Send(interfacePid, &messages.InterInterfaceWeightsMessage{})
 
 	time.Sleep(time.Hour)
 }
