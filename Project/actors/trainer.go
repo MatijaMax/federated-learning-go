@@ -94,25 +94,29 @@ func NewNeuralNetworkWithWeights(inputNodes, hiddenNodes, hiddenNodes2, outputNo
 		biasO:        make([]float64, outputNodes),
 	}
 
+    fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1")
+    fmt.Print(weightsIH)
 	for i := range nn.weightsIH {
 		nn.weightsIH[i] = make([]float64, hiddenNodes)
 		for j := range nn.weightsIH[i] {
-			nn.weightsIH[i][j] = weightsIH[i][j]
+			nn.weightsIH[i][j] = randRange(-1, 1)
 		}
 	}
+    fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA2")
 	for i := range nn.weightsHH {
 		nn.weightsHH[i] = make([]float64, hiddenNodes2)
 		for j := range nn.weightsHH[i] {
 			nn.weightsHH[i][j] = weightsHH[i][j]
 		}
 	}
+    fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3")
 	for i := range nn.weightsHO {
 		nn.weightsHO[i] = make([]float64, outputNodes)
 		for j := range nn.weightsHO[i] {
 			nn.weightsHO[i][j] = weightsHO[i][j]
 		}
 	}
-
+    fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4")
 	for i := range nn.biasH {
 		nn.biasH[i] = biasH[i]
 	}
@@ -122,7 +126,7 @@ func NewNeuralNetworkWithWeights(inputNodes, hiddenNodes, hiddenNodes2, outputNo
 	for i := range nn.biasO {
 		nn.biasO[i] = biasO[i]
 	}
-
+fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 	return nn
 }
 
@@ -252,19 +256,12 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
 
 	nn := NewNeuralNetwork(inputNodes, hiddenNodes, hiddenNodes2, outputNodes)
 
-	// Test the feedforward function with some input data
-	// input := featuresIn[9]
-	// fmt.Println("Input to the neural network:", input)
-	// output := nn.FeedForward(input)
-	// fmt.Println("Output from the neural network:", output)
 
 	trainingData := featuresIn[:len(featuresIn)-20]
 	targetData := labelsIn[:len(featuresIn)-20]
 
 	nn.TrainNN(trainingData, targetData, 10, 0.04)
 
-	// output = nn.FeedForward(input)
-	// fmt.Println("Output from the neural network:", output)
 
 	validationData := featuresIn[len(featuresIn)-20:]
 	validationLabels := labelsIn[len(labelsIn)-20:]
@@ -272,18 +269,6 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
 	recall := nn.EvaluateRecall(validationData, validationLabels, 1.0)
 	fmt.Printf("Validation Recall nakon 10 epoha: %f\n", recall)
 
-	// nn.TrainNN(trainingData, targetData, 10, 0.04)
-
-	// // output = nn.FeedForward(input)
-	// // fmt.Println("Output from the neural network:", output)
-
-	// recall = nn.EvaluateRecall(validationData, validationLabels, 1.0)
-	// fmt.Printf("Validation Recall nakon drugih 10 epoha: %f\n", recall)
-
-	// nn.TrainNN(trainingData, targetData, 10, 0.04)
-
-	// recall = nn.EvaluateRecall(validationData, validationLabels, 1.0)
-	// fmt.Printf("Validation Recall nakon trecih 10 epoha: %f\n", recall)
 
 	var twoDArrayProtoIH []*messages.FloatArray
 	for _, row := range nn.weightsIH {

@@ -78,6 +78,8 @@ func (state *AveragerActor) Receive(context actor.Context) {
 
 		// do ovde sam zakomentarisao sad, dacu mu one iste tezine, u sustini samo ce nastaviti trening
 
+		// fmt.Println(state.queueTrainersWB)
+		// fmt.Println(state.queueInterfacesWB)
 		weightsBiasesRES, hasRes := state.AverageFirstN()
 		if hasRes == true {
 			var twoDArrayProtoIH []*messages.FloatArray
@@ -293,12 +295,20 @@ func addWeightsBiases(wb1, wb2 WeightsBiases) WeightsBiases {
 		biasO:     make([]float64, len(wb1.biasO)),
 	}
 
+	fmt.Println(wb1)
+	fmt.Println(wb2)
+
 	for i := range wb1.weightsIH {
 		result.weightsIH[i] = make([]float64, len(wb1.weightsIH[i]))
 		for j := range wb1.weightsIH[i] {
+			
 			result.weightsIH[i][j] = wb1.weightsIH[i][j] + wb2.weightsIH[i][j]
 		}
 	}
+
+	fmt.Println("HIAAAAA")
+	fmt.Println(result.weightsIH)
+	fmt.Println("HIAAAAA")
 
 	for i := range wb1.weightsHH {
 		result.weightsHH[i] = make([]float64, len(wb1.weightsHH[i]))
@@ -330,6 +340,7 @@ func addWeightsBiases(wb1, wb2 WeightsBiases) WeightsBiases {
 }
 
 func (a *AveragerActor) AverageFirstN() (WeightsBiases, bool) {
+	fmt.Println("MAAAAA")
 	n := 0
 	if len(a.queueTrainersWB) < len(a.queueInterfacesWB) {
 		n = len(a.queueTrainersWB)
@@ -349,11 +360,44 @@ func (a *AveragerActor) AverageFirstN() (WeightsBiases, bool) {
 		biasO:     make([]float64, len(a.queueTrainersWB[0].biasO)),
 	}
 
+	for i := range a.queueTrainersWB[0].weightsIH {
+		sum.weightsIH[i] = make([]float64, len(a.queueTrainersWB[0].weightsIH[i]))
+		for j := range a.queueTrainersWB[0].weightsIH[i] {
+			
+			sum.weightsIH[i][j] = 0
+		}
+	}
+	for i := range a.queueTrainersWB[0].weightsHH {
+		sum.weightsHH[i] = make([]float64, len(a.queueTrainersWB[0].weightsHH[i]))
+		for j := range a.queueTrainersWB[0].weightsHH[i] {
+			sum.weightsHH[i][j] = 0
+		}
+	}
+	for i := range a.queueTrainersWB[0].weightsHO {
+		sum.weightsHO[i] = make([]float64, len(a.queueTrainersWB[0].weightsHO[i]))
+		for j := range a.queueTrainersWB[0].weightsHO[i] {
+			sum.weightsHO[i][j] = 0
+		}
+	}
+	for i := range a.queueTrainersWB[0].biasH {
+		sum.biasH[i] = 0
+	}
+	for i := range a.queueTrainersWB[0].biasH2 {
+		sum.biasH2[i] = 0
+	}
+	for i := range a.queueTrainersWB[0].biasO {
+		sum.biasO[i] = 0
+	}
+	fmt.Println("GASCINAAA")
+	fmt.Println(sum)
 	for i := 0; i < n; i++ {
 		sum = addWeightsBiases(sum, a.queueTrainersWB[i])
 		sum = addWeightsBiases(sum, a.queueInterfacesWB[i])
 	}
 
+	fmt.Println("MAAAAA")
+	fmt.Println(sum)
+	fmt.Println("MAAAAA")
 	average := WeightsBiases{
 		weightsIH: make([][]float64, len(sum.weightsIH)),
 		weightsHH: make([][]float64, len(sum.weightsHH)),
