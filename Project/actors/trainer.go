@@ -318,7 +318,7 @@ func TrainAgain(context actor.Context, state *TrainerActor, weightsIH, weightsHH
 	time.Sleep(time.Second * 2)
 
 	fmt.Println("Opet treniram")
-	featuresIn, labelsIn, err := ReadDataset("../dataset/Diabetes.csv")
+	featuresIn, labelsIn, err := ReadDataset(state.pathToData)
 	if err != nil {
 		fmt.Println("Error reading dataset:", err)
 	}

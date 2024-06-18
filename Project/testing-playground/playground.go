@@ -89,14 +89,14 @@ func main() {
 	time.Sleep(time.Second * 1)
 	context.Send(interfacePid, &messages.SpawnedAveragerPID{ThePid: averagerPid})
 	context.Send(averagerPid, &messages.SpawnedTrainerPID{ThePid: trainerPid})
-	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/Diabetes.csv1"})
+	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/Diabetes1.csv"})
 	context.Send(trainerPid, &messages.SpawnedInterfacePID{ThePid: interfacePid})
 
 	context.Send(interfacePidRemote, &messages.RemoteIntegerPID{YourInterfacePid: interfacePidRemote, AllInterfacePids: interfacePids})
 
 	context.Send(interfacePidRemote, &messages.SpawnedAveragerPID{ThePid: averagerPidRemote})
 	context.Send(averagerPidRemote, &messages.SpawnedTrainerPID{ThePid: trainerPidRemote})
-	context.Send(trainerPidRemote, &messages.SpawnedAveragerPID{ThePid: averagerPidRemote, DataPath: "../dataset/Diabetes.csv1"})
+	context.Send(trainerPidRemote, &messages.SpawnedAveragerPID{ThePid: averagerPidRemote, DataPath: "../dataset/Diabetes2.csv"})
 	context.Send(trainerPidRemote, &messages.SpawnedInterfacePID{ThePid: interfacePidRemote})
 
 	// time.Sleep(time.Second * 10)
