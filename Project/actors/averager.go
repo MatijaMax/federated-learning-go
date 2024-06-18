@@ -41,181 +41,122 @@ func (state *AveragerActor) Receive(context actor.Context) {
 
 	case *messages.InterfaceToAveragerWeightsMessage:
 		fmt.Println("WWWWWWWWWWWWWWWWWWWWWWWWWWW")
-		if state.hasWeights == false {
-			fmt.Println("EEEEEEEEEEE")
-			state.hasWeights = true
-			var weightsBiases WeightsBiases
-			for _, floatArray := range msg.WeightsIH {
-				var row []float64
-				for _, value := range floatArray.Column {
-					row = append(row, value)
+		fmt.Println("EEEEEEEEEEE")
+		state.hasWeights = true
+		var weightsBiases WeightsBiases
+		for _, floatArray := range msg.WeightsIH {
+			var row []float64
+			for _, value := range floatArray.Column {
+				row = append(row, value)
+			}
+			weightsBiases.weightsIH = append(weightsBiases.weightsIH, row)
+		}
+
+		for _, floatArray := range msg.WeightsHH {
+			var row []float64
+			for _, value := range floatArray.Column {
+				row = append(row, value)
+			}
+			weightsBiases.weightsHH = append(weightsBiases.weightsHH, row)
+		}
+
+		for _, floatArray := range msg.WeightsHO {
+			var row []float64
+			for _, value := range floatArray.Column {
+				row = append(row, value)
+			}
+			weightsBiases.weightsHO = append(weightsBiases.weightsHO, row)
+		}
+
+		weightsBiases.biasH = msg.BiasH
+		weightsBiases.biasH2 = msg.BiasH2
+		weightsBiases.biasO = msg.BiasO
+		state.queueInterfacesWB = append(state.queueInterfacesWB, weightsBiases)
+
+		fmt.Println("AVERAGER: dobio sam nove tezine od interfejsa")
+		//ovaj deo cu za sad da zakomentarisem gde prima tezine od interfejsa i usredni ih, testiram samo da prosledi opet do trenera i onda da ide sve u krug
+
+		// do ovde sam zakomentarisao sad, dacu mu one iste tezine, u sustini samo ce nastaviti trening
+
+		weightsBiasesRES, hasRes := state.AverageFirstN()
+		if hasRes == true {
+			var twoDArrayProtoIH []*messages.FloatArray
+			for _, row := range weightsBiasesRES.weightsIH {
+				floatArray := &messages.FloatArray{}
+				for _, value := range row {
+					floatArray.Column = append(floatArray.Column, value)
 				}
-				weightsBiases.weightsIH = append(weightsBiases.weightsIH, row)
+				twoDArrayProtoIH = append(twoDArrayProtoIH, floatArray)
 			}
 
-			for _, floatArray := range msg.WeightsHH {
-				var row []float64
-				for _, value := range floatArray.Column {
-					row = append(row, value)
+			var twoDArrayProtoHH []*messages.FloatArray
+			for _, row := range weightsBiasesRES.weightsHH {
+				floatArray := &messages.FloatArray{}
+				for _, value := range row {
+					floatArray.Column = append(floatArray.Column, value)
 				}
-				weightsBiases.weightsHH = append(weightsBiases.weightsHH, row)
+				twoDArrayProtoHH = append(twoDArrayProtoHH, floatArray)
 			}
 
-			for _, floatArray := range msg.WeightsHO {
-				var row []float64
-				for _, value := range floatArray.Column {
-					row = append(row, value)
+			var twoDArrayProtoHO []*messages.FloatArray
+			for _, row := range weightsBiasesRES.weightsHO {
+				floatArray := &messages.FloatArray{}
+				for _, value := range row {
+					floatArray.Column = append(floatArray.Column, value)
 				}
-				weightsBiases.weightsHO = append(weightsBiases.weightsHO, row)
+				twoDArrayProtoHO = append(twoDArrayProtoHO, floatArray)
 			}
 
-			weightsBiases.biasH = msg.BiasH
-			weightsBiases.biasH2 = msg.BiasH2
-			weightsBiases.biasO = msg.BiasO
-			state.queueInterfacesWB = append(state.queueInterfacesWB, weightsBiases)
-
+			myMessage := &messages.AveragerWeightsMessage{
+				WeightsIH: twoDArrayProtoIH,
+				WeightsHH: twoDArrayProtoHH,
+				WeightsHO: twoDArrayProtoHO,
+				BiasH:     weightsBiasesRES.biasH,
+				BiasH2:    weightsBiasesRES.biasH2,
+				BiasO:     weightsBiasesRES.biasO,
+			}
+			context.Send(state.spawnedTrainerPID, myMessage)
 			fmt.Println("AVERAGER: dobio sam nove tezine od interfejsa")
 		} else {
-			//ovaj deo cu za sad da zakomentarisem gde prima tezine od interfejsa i usredni ih, testiram samo da prosledi opet do trenera i onda da ide sve u krug
-			// fmt.Println("AAAAAAAAAA")
-			// var weightsIH [][]float64
-			// for _, floatArray := range msg.WeightsIH {
-			// 	var row []float64
-			// 	for _, value := range floatArray.Column {
-			// 		row = append(row, value)
+			fmt.Println("Nema sta da prosecim")
+			//sad samo ovako al menjacu
+			// weightsBiasesRES := state.queueTrainersWB[0]
+			// var twoDArrayProtoIH []*messages.FloatArray
+			// for _, row := range weightsBiasesRES.weightsIH {
+			// 	floatArray := &messages.FloatArray{}
+			// 	for _, value := range row {
+			// 		floatArray.Column = append(floatArray.Column, value)
 			// 	}
-			// 	weightsIH = append(weightsIH, row)
+			// 	twoDArrayProtoIH = append(twoDArrayProtoIH, floatArray)
 			// }
 
-			// var weightsHH [][]float64
-			// for _, floatArray := range msg.WeightsHH {
-			// 	var row []float64
-			// 	for _, value := range floatArray.Column {
-			// 		row = append(row, value)
+			// var twoDArrayProtoHH []*messages.FloatArray
+			// for _, row := range weightsBiasesRES.weightsHH {
+			// 	floatArray := &messages.FloatArray{}
+			// 	for _, value := range row {
+			// 		floatArray.Column = append(floatArray.Column, value)
 			// 	}
-			// 	weightsHH = append(weightsHH, row)
+			// 	twoDArrayProtoHH = append(twoDArrayProtoHH, floatArray)
 			// }
 
-			// var weightsHO [][]float64
-			// for _, floatArray := range msg.WeightsHO {
-			// 	var row []float64
-			// 	for _, value := range floatArray.Column {
-			// 		row = append(row, value)
+			// var twoDArrayProtoHO []*messages.FloatArray
+			// for _, row := range weightsBiasesRES.weightsHO {
+			// 	floatArray := &messages.FloatArray{}
+			// 	for _, value := range row {
+			// 		floatArray.Column = append(floatArray.Column, value)
 			// 	}
-			// 	weightsHO = append(weightsHO, row)
+			// 	twoDArrayProtoHO = append(twoDArrayProtoHO, floatArray)
 			// }
 
-			// biasH := msg.BiasH
-			// biasH2 := msg.BiasH2
-			// biasO  := msg.BiasO
-
-			// // uprosecavanje jednostavno
-			// for i := range state.weightsIH {
-			// 	for j := range state.weightsIH[i] {
-			// 		state.weightsIH[i][j] = (state.weightsIH[i][j] + weightsIH[i][j])/2
-			// 	}
+			// myMessage := &messages.AveragerWeightsMessage{
+			// 	WeightsIH: twoDArrayProtoIH,
+			// 	WeightsHH: twoDArrayProtoHH,
+			// 	WeightsHO: twoDArrayProtoHO,
+			// 	BiasH:     weightsBiasesRES.biasH,
+			// 	BiasH2:    weightsBiasesRES.biasH2,
+			// 	BiasO:     weightsBiasesRES.biasO,
 			// }
-			// for i := range state.weightsHH {
-			// 	for j := range state.weightsIH[i] {
-			// 		state.weightsHH[i][j] = (state.weightsHH[i][j] + weightsHH[i][j])/2
-			// 	}
-			// }
-			// for i := range state.weightsIH {
-			// 	for j := range state.weightsHO[i] {
-			// 		state.weightsHO[i][j] = (state.weightsHO[i][j] + weightsHO[i][j])/2
-			// 	}
-			// }
-			// for j := range state.biasH {
-			// 	state.biasH[j] = (state.biasH[j] + biasH[j])/2
-			// }
-			// for j := range state.biasH2 {
-			// 	state.biasH2[j] = (state.biasH2[j] + biasH2[j])/2
-			// }
-			// for j := range state.biasO {
-			// 	state.biasO[j] = (state.biasO[j] + biasO[j])/2
-			// }
-			// do ovde sam zakomentarisao sad, dacu mu one iste tezine, u sustini samo ce nastaviti trening
-
-			weightsBiasesRES, hasRes := state.AverageFirstN()
-			if hasRes == true {
-				var twoDArrayProtoIH []*messages.FloatArray
-				for _, row := range weightsBiasesRES.weightsIH {
-					floatArray := &messages.FloatArray{}
-					for _, value := range row {
-						floatArray.Column = append(floatArray.Column, value)
-					}
-					twoDArrayProtoIH = append(twoDArrayProtoIH, floatArray)
-				}
-
-				var twoDArrayProtoHH []*messages.FloatArray
-				for _, row := range weightsBiasesRES.weightsHH {
-					floatArray := &messages.FloatArray{}
-					for _, value := range row {
-						floatArray.Column = append(floatArray.Column, value)
-					}
-					twoDArrayProtoHH = append(twoDArrayProtoHH, floatArray)
-				}
-
-				var twoDArrayProtoHO []*messages.FloatArray
-				for _, row := range weightsBiasesRES.weightsHO {
-					floatArray := &messages.FloatArray{}
-					for _, value := range row {
-						floatArray.Column = append(floatArray.Column, value)
-					}
-					twoDArrayProtoHO = append(twoDArrayProtoHO, floatArray)
-				}
-
-				myMessage := &messages.AveragerWeightsMessage{
-					WeightsIH: twoDArrayProtoIH,
-					WeightsHH: twoDArrayProtoHH,
-					WeightsHO: twoDArrayProtoHO,
-					BiasH:     weightsBiasesRES.biasH,
-					BiasH2:    weightsBiasesRES.biasH2,
-					BiasO:     weightsBiasesRES.biasO,
-				}
-				context.Send(state.spawnedTrainerPID, myMessage)
-				fmt.Println("AVERAGER: dobio sam nove tezine od interfejsa")
-			} else {
-				fmt.Println("Nema sta da prosecim")
-				//sad samo ovako al menjacu
-				weightsBiasesRES := state.queueTrainersWB[0]
-				var twoDArrayProtoIH []*messages.FloatArray
-				for _, row := range weightsBiasesRES.weightsIH {
-					floatArray := &messages.FloatArray{}
-					for _, value := range row {
-						floatArray.Column = append(floatArray.Column, value)
-					}
-					twoDArrayProtoIH = append(twoDArrayProtoIH, floatArray)
-				}
-
-				var twoDArrayProtoHH []*messages.FloatArray
-				for _, row := range weightsBiasesRES.weightsHH {
-					floatArray := &messages.FloatArray{}
-					for _, value := range row {
-						floatArray.Column = append(floatArray.Column, value)
-					}
-					twoDArrayProtoHH = append(twoDArrayProtoHH, floatArray)
-				}
-
-				var twoDArrayProtoHO []*messages.FloatArray
-				for _, row := range weightsBiasesRES.weightsHO {
-					floatArray := &messages.FloatArray{}
-					for _, value := range row {
-						floatArray.Column = append(floatArray.Column, value)
-					}
-					twoDArrayProtoHO = append(twoDArrayProtoHO, floatArray)
-				}
-
-				myMessage := &messages.AveragerWeightsMessage{
-					WeightsIH: twoDArrayProtoIH,
-					WeightsHH: twoDArrayProtoHH,
-					WeightsHO: twoDArrayProtoHO,
-					BiasH:     weightsBiasesRES.biasH,
-					BiasH2:    weightsBiasesRES.biasH2,
-					BiasO:     weightsBiasesRES.biasO,
-				}
-				context.Send(state.spawnedTrainerPID, myMessage)
-			}
+			// context.Send(state.spawnedTrainerPID, myMessage)
 		}
 
 	case *messages.TrainerWeightsMessage:

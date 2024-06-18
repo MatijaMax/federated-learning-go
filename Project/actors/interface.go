@@ -40,8 +40,16 @@ func (state *InterfaceActor) Receive(context actor.Context) {
 		fmt.Println("JA SAM INTERFEJS: " + msg.NizFloatova)
 	case *messages.InterInterfaceWeightsMessage:
 		time.Sleep(time.Second * 2)
-		fmt.Println("Interfejs: Dobio sam tezine od brace iz klastera (mozda nekad proradi)")
-		context.Send(state.spawnedAveragerPID, &messages.InterfaceToAveragerWeightsMessage{})
+		//fmt.Println("Interfejs: Dobio sam tezine od brace iz klastera (mozda nekad proradi)")
+		fmt.Println("Interfejs: Dobio sam tezine od brace iz klastera")
+		context.Send(state.spawnedAveragerPID, &messages.InterfaceToAveragerWeightsMessage{
+			WeightsIH: msg.WeightsIH,
+			WeightsHH: msg.WeightsHH,
+			WeightsHO: msg.WeightsHO,
+			BiasH:     msg.BiasH,
+			BiasH2:    msg.BiasH2,
+			BiasO:     msg.BiasO,
+		})
 
 	}
 }
