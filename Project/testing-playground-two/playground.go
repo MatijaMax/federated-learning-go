@@ -12,7 +12,7 @@ type Hello struct{ Who string }
 
 func main() {
 	system := actor.NewActorSystem()
-	remoteConfig := remote.Configure("127.0.0.1", 8091)
+	remoteConfig := remote.Configure("192.168.43.81", 8091)
 	remoting := remote.NewRemote(system, remoteConfig)
 	remoting.Start()
 	remoting.Register("interfejs1", actor.PropsFromProducer(func() actor.Actor { return &actors.InterfaceActor{} }))
