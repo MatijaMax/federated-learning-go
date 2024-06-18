@@ -10,10 +10,13 @@ import (
 
 type SpawnedAveragerPID struct{ PID *actor.PID }
 
+type RemoteIntegerPID struct{ PID *actor.PID }
+
 type InterfaceActor struct {
 	count              int
 	message            string
 	spawnedAveragerPID *actor.PID
+	queueInterfaces    []*actor.PID
 }
 
 func (state *InterfaceActor) Receive(context actor.Context) {
@@ -22,6 +25,11 @@ func (state *InterfaceActor) Receive(context actor.Context) {
 		state.count++
 		state.message = "Input" + string(state.count)
 		fmt.Println(msg.GetSomeValue()+":", state.count)
+
+	case RemoteIntegerPID:
+		fmt.Println("INTERFEJS dobavio PID Remote Sistema:", msg.PID)
+		state.queueInterfaces = append(state.queueInterfaces, msg.PID)
+
 	case *messages.Echo:
 		fmt.Printf(msg.GetMessage() + "\n")
 	case SpawnedAveragerPID:
