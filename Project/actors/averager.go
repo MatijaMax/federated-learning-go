@@ -75,7 +75,6 @@ func (state *AveragerActor) Receive(context actor.Context) {
 
 		fmt.Println("AVERAGER: dobio sam nove tezine od interfejsa")
 		//ovaj deo cu za sad da zakomentarisem gde prima tezine od interfejsa i usredni ih, testiram samo da prosledi opet do trenera i onda da ide sve u krug
-
 		// do ovde sam zakomentarisao sad, dacu mu one iste tezine, u sustini samo ce nastaviti trening
 
 		// fmt.Println(state.queueTrainersWB)
@@ -122,43 +121,7 @@ func (state *AveragerActor) Receive(context actor.Context) {
 		} else {
 			fmt.Println("Nema sta da prosecim")
 			//sad samo ovako al menjacu
-			// weightsBiasesRES := state.queueTrainersWB[0]
-			// var twoDArrayProtoIH []*messages.FloatArray
-			// for _, row := range weightsBiasesRES.weightsIH {
-			// 	floatArray := &messages.FloatArray{}
-			// 	for _, value := range row {
-			// 		floatArray.Column = append(floatArray.Column, value)
-			// 	}
-			// 	twoDArrayProtoIH = append(twoDArrayProtoIH, floatArray)
-			// }
-
-			// var twoDArrayProtoHH []*messages.FloatArray
-			// for _, row := range weightsBiasesRES.weightsHH {
-			// 	floatArray := &messages.FloatArray{}
-			// 	for _, value := range row {
-			// 		floatArray.Column = append(floatArray.Column, value)
-			// 	}
-			// 	twoDArrayProtoHH = append(twoDArrayProtoHH, floatArray)
-			// }
-
-			// var twoDArrayProtoHO []*messages.FloatArray
-			// for _, row := range weightsBiasesRES.weightsHO {
-			// 	floatArray := &messages.FloatArray{}
-			// 	for _, value := range row {
-			// 		floatArray.Column = append(floatArray.Column, value)
-			// 	}
-			// 	twoDArrayProtoHO = append(twoDArrayProtoHO, floatArray)
-			// }
-
-			// myMessage := &messages.AveragerWeightsMessage{
-			// 	WeightsIH: twoDArrayProtoIH,
-			// 	WeightsHH: twoDArrayProtoHH,
-			// 	WeightsHO: twoDArrayProtoHO,
-			// 	BiasH:     weightsBiasesRES.biasH,
-			// 	BiasH2:    weightsBiasesRES.biasH2,
-			// 	BiasO:     weightsBiasesRES.biasO,
-			// }
-			// context.Send(state.spawnedTrainerPID, myMessage)
+			
 		}
 
 	case *messages.TrainerWeightsMessage:
@@ -295,8 +258,8 @@ func addWeightsBiases(wb1, wb2 WeightsBiases) WeightsBiases {
 		biasO:     make([]float64, len(wb1.biasO)),
 	}
 
-	fmt.Println(wb1)
-	fmt.Println(wb2)
+	// fmt.Println(wb1)
+	// fmt.Println(wb2)
 
 	for i := range wb1.weightsIH {
 		result.weightsIH[i] = make([]float64, len(wb1.weightsIH[i]))
@@ -306,9 +269,9 @@ func addWeightsBiases(wb1, wb2 WeightsBiases) WeightsBiases {
 		}
 	}
 
-	fmt.Println("HIAAAAA")
-	fmt.Println(result.weightsIH)
-	fmt.Println("HIAAAAA")
+	// fmt.Println("HIAAAAA")
+	// fmt.Println(result.weightsIH)
+	// fmt.Println("HIAAAAA")
 
 	for i := range wb1.weightsHH {
 		result.weightsHH[i] = make([]float64, len(wb1.weightsHH[i]))
@@ -340,7 +303,7 @@ func addWeightsBiases(wb1, wb2 WeightsBiases) WeightsBiases {
 }
 
 func (a *AveragerActor) AverageFirstN() (WeightsBiases, bool) {
-	fmt.Println("MAAAAA")
+	// fmt.Println("MAAAAA")
 	n := 0
 	if len(a.queueTrainersWB) < len(a.queueInterfacesWB) {
 		n = len(a.queueTrainersWB)
@@ -388,16 +351,16 @@ func (a *AveragerActor) AverageFirstN() (WeightsBiases, bool) {
 	for i := range a.queueTrainersWB[0].biasO {
 		sum.biasO[i] = 0
 	}
-	fmt.Println("GASCINAAA")
-	fmt.Println(sum)
+	// fmt.Println("GASCINAAA")
+	// fmt.Println(sum)
 	for i := 0; i < n; i++ {
 		sum = addWeightsBiases(sum, a.queueTrainersWB[i])
 		sum = addWeightsBiases(sum, a.queueInterfacesWB[i])
 	}
 
-	fmt.Println("MAAAAA")
-	fmt.Println(sum)
-	fmt.Println("MAAAAA")
+	// fmt.Println("MAAAAA")
+	// fmt.Println(sum)
+	// fmt.Println("MAAAAA")
 	average := WeightsBiases{
 		weightsIH: make([][]float64, len(sum.weightsIH)),
 		weightsHH: make([][]float64, len(sum.weightsHH)),

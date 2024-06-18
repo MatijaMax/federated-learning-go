@@ -65,6 +65,7 @@ message RemoteIntegerPID
 message SpawnedAveragerPID 
 {
    actor.PID thePid = 1;
+   string dataPath = 2;
 }
 
 message SpawnedTrainerPID 

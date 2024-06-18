@@ -19,6 +19,7 @@ type TrainerActor struct {
 	spawnedInterfacePID *actor.PID
 	spawnedAveragerPID  *actor.PID
 	startState          bool
+    pathToData          string
 }
 
 type NeuralNetwork struct {
@@ -94,29 +95,29 @@ func NewNeuralNetworkWithWeights(inputNodes, hiddenNodes, hiddenNodes2, outputNo
 		biasO:        make([]float64, outputNodes),
 	}
 
-    fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1")
-    fmt.Print(weightsIH)
+    // fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1")
+    // fmt.Print(weightsIH)
 	for i := range nn.weightsIH {
 		nn.weightsIH[i] = make([]float64, hiddenNodes)
 		for j := range nn.weightsIH[i] {
 			nn.weightsIH[i][j] = randRange(-1, 1)
 		}
 	}
-    fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA2")
+    // fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA2")
 	for i := range nn.weightsHH {
 		nn.weightsHH[i] = make([]float64, hiddenNodes2)
 		for j := range nn.weightsHH[i] {
 			nn.weightsHH[i][j] = weightsHH[i][j]
 		}
 	}
-    fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3")
+    // fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3")
 	for i := range nn.weightsHO {
 		nn.weightsHO[i] = make([]float64, outputNodes)
 		for j := range nn.weightsHO[i] {
 			nn.weightsHO[i][j] = weightsHO[i][j]
 		}
 	}
-    fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4")
+    // fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4")
 	for i := range nn.biasH {
 		nn.biasH[i] = biasH[i]
 	}
@@ -126,7 +127,7 @@ func NewNeuralNetworkWithWeights(inputNodes, hiddenNodes, hiddenNodes2, outputNo
 	for i := range nn.biasO {
 		nn.biasO[i] = biasO[i]
 	}
-fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+// fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 	return nn
 }
 
@@ -237,7 +238,7 @@ func (nn *NeuralNetwork) forwardPass(inputs []float64) ([]float64, []float64, []
 func Train(context actor.Context, state *TrainerActor) []float64 {
 	time.Sleep(time.Second * 2)
 
-	featuresIn, labelsIn, err := ReadDataset("../dataset/Diabetes.csv")
+	featuresIn, labelsIn, err := ReadDataset(state.pathToData)
 	if err != nil {
 		fmt.Println("Error reading dataset:", err)
 		// return
@@ -521,6 +522,7 @@ func (state *TrainerActor) Receive(context actor.Context) {
 	case *messages.SpawnedAveragerPID:
 		fmt.Println("TRENER dobavio PID Averagera: ", msg.ThePid)
 		state.spawnedAveragerPID = msg.ThePid
+        state.pathToData = msg.DataPath
 		if state.spawnedInterfacePID != nil {
 			state.startState = true
 			Train(context, state)
