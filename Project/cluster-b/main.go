@@ -19,8 +19,7 @@ func main() {
 	// Set up the actor system
 	system := actor.NewActorSystem()
 
-
-	config := remote.Configure("localhost", 8081)
+	config := remote.Configure("192.168.43.81", 8081)
 
 	// Configure a cluster on top of the above remote env
 	provider := automanaged.NewWithConfig(1*time.Second, 6331, "localhost:6331")
@@ -60,7 +59,7 @@ func main() {
 			fmt.Println(interfaceGrainPid)
 		}
 		if i == 2 {
-			
+
 		}
 		if i == 3 {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.AveragerActor{} })
@@ -85,7 +84,7 @@ func main() {
 	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/Diabetes1.csv"})
 	context.Send(trainerPid, &messages.SpawnedInterfacePID{ThePid: interfaceGrainPid})
 
-	context.Send(interfaceGrainPid, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPid, AllInterfacePids: interfacePids})
+	// context.Send(interfaceGrainPid, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPid, AllInterfacePids: interfacePids})
 
 	// Run till a signal comes
 	finish := make(chan os.Signal, 1)

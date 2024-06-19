@@ -19,10 +19,10 @@ func main() {
 
 	system := actor.NewActorSystem()
 
-	config := remote.Configure("localhost", 8090)
+	config := remote.Configure("192.168.43.151", 8090)
 
 	// Configure a cluster on top of the above remote env
-	provider := automanaged.NewWithConfig(1*time.Second, 6332, "localhost:6331")
+	provider := automanaged.NewWithConfig(1*time.Second, 6332, "192.168.43.81:6331")
 	// provider, err := etcd.NewWithConfig("/protoactor", clientv3.Config{
 	// 	Endpoints:   []string{"127.0.0.1:2379"},
 	// 	DialTimeout: time.Second * 1,
@@ -37,19 +37,17 @@ func main() {
 	c.StartMember()
 	defer c.Shutdown(false)
 
-	
-
 	time.Sleep(1 * time.Second)
-	
+
 	//##########################
 
 	context := system.Root
 
-	
 	var averagerPid *actor.PID = nil
 	var trainerPid *actor.PID = nil
 
 	var interfaceGrainPid *actor.PID = nil
+	var interfaceGrainPidOther *actor.PID = nil
 	var interfacePids []*actor.PID
 
 	// Spawn three local actors
@@ -65,7 +63,7 @@ func main() {
 			fmt.Println(interfaceGrainPid)
 		}
 		if i == 2 {
-			
+
 		}
 		if i == 3 {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.AveragerActor{} })
@@ -73,7 +71,7 @@ func main() {
 			averagerPid = pid
 		}
 		if i == 4 {
-			interfaceGrainPidOther := cluster.GetCluster(system).Get("remote-interface-2", "Interface")
+			interfaceGrainPidOther = cluster.GetCluster(system).Get("remote-interface-2", "Interface")
 			interfacePids = append(interfacePids, interfaceGrainPidOther)
 			fmt.Println("EEEEEEEEEEEEEEEE")
 			fmt.Println(interfaceGrainPidOther)
@@ -95,8 +93,7 @@ func main() {
 	context.Send(trainerPid, &messages.SpawnedInterfacePID{ThePid: interfaceGrainPid})
 
 	context.Send(interfaceGrainPid, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPid, AllInterfacePids: interfacePids})
-
-	
+	context.Send(interfaceGrainPidOther, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPidOther, AllInterfacePids: interfacePids})
 
 	time.Sleep(time.Hour)
 }
