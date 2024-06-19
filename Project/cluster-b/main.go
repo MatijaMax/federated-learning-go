@@ -19,11 +19,11 @@ func main() {
 	// Set up the actor system
 	system := actor.NewActorSystem()
 
-	// Prepare a remote env that listens to 8080
-	config := remote.Configure("192.168.43.151", 8081)
+
+	config := remote.Configure("localhost", 8081)
 
 	// Configure a cluster on top of the above remote env
-	provider := automanaged.NewWithConfig(1*time.Second, 6331, "192.168.43.151:6331")
+	provider := automanaged.NewWithConfig(1*time.Second, 6331, "localhost:6331")
 	// provider, err := etcd.NewWithConfig("/protoactor", clientv3.Config{
 	// 	Endpoints:   []string{"127.0.0.1:2379"},
 	// 	DialTimeout: time.Second * 5,
@@ -54,15 +54,24 @@ func main() {
 
 	for i := 0; i < 6; i++ {
 		if i == 1 {
-			interfaceGrainPid = cluster.GetCluster(system).Get("remote-interface-1", "Interface")
+			interfaceGrainPid = cluster.GetCluster(system).Get("remote-interface-2", "Interface")
 			interfacePids = append(interfacePids, interfaceGrainPid)
-			fmt.Println("AAARRRRRRRREEE")
+			fmt.Println("SSSSSSSSSSSSSSSSSSSS")
 			fmt.Println(interfaceGrainPid)
+		}
+		if i == 2 {
+			
 		}
 		if i == 3 {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.AveragerActor{} })
 			pid := context.Spawn(props)
 			averagerPid = pid
+		}
+		if i == 4 {
+			interfaceGrainPidOther := cluster.GetCluster(system).Get("remote-interface-1", "Interface")
+			interfacePids = append(interfacePids, interfaceGrainPidOther)
+			fmt.Println("EEEEEEEEEEEEEEEE")
+			fmt.Println(interfaceGrainPidOther)
 		}
 		if i == 5 {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.TrainerActor{} })
