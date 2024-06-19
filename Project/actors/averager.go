@@ -73,7 +73,7 @@ func (state *AveragerActor) Receive(context actor.Context) {
 		weightsBiases.biasO = msg.BiasO
 		state.queueInterfacesWB = append(state.queueInterfacesWB, weightsBiases)
 
-		fmt.Println("AVERAGER: dobio sam nove tezine od interfejsa")
+		//fmt.Println("AVERAGER: dobio sam nove tezine od interfejsa")
 		//ovaj deo cu za sad da zakomentarisem gde prima tezine od interfejsa i usredni ih, testiram samo da prosledi opet do trenera i onda da ide sve u krug
 		// do ovde sam zakomentarisao sad, dacu mu one iste tezine, u sustini samo ce nastaviti trening
 
@@ -121,7 +121,7 @@ func (state *AveragerActor) Receive(context actor.Context) {
 		} else {
 			fmt.Println("Nema sta da prosecim")
 			//sad samo ovako al menjacu
-			
+
 		}
 
 	case *messages.TrainerWeightsMessage:
@@ -264,7 +264,7 @@ func addWeightsBiases(wb1, wb2 WeightsBiases) WeightsBiases {
 	for i := range wb1.weightsIH {
 		result.weightsIH[i] = make([]float64, len(wb1.weightsIH[i]))
 		for j := range wb1.weightsIH[i] {
-			
+
 			result.weightsIH[i][j] = wb1.weightsIH[i][j] + wb2.weightsIH[i][j]
 		}
 	}
@@ -326,7 +326,7 @@ func (a *AveragerActor) AverageFirstN() (WeightsBiases, bool) {
 	for i := range a.queueTrainersWB[0].weightsIH {
 		sum.weightsIH[i] = make([]float64, len(a.queueTrainersWB[0].weightsIH[i]))
 		for j := range a.queueTrainersWB[0].weightsIH[i] {
-			
+
 			sum.weightsIH[i][j] = 0
 		}
 	}

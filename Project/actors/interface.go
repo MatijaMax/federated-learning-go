@@ -24,7 +24,7 @@ func (state *InterfaceActor) Receive(context actor.Context) {
 		fmt.Println(msg.GetSomeValue()+":", state.count)
 
 	case *messages.RemoteIntegerPID:
-		fmt.Println("INTERFEJS dobavio PID Remote Sistema:", msg.YourInterfacePid)
+		fmt.Println("INTERFEJS dobavio svoj PID:", msg.YourInterfacePid)
 		fmt.Println("INTERFEJS REMOTE STARTERA:", msg.AllInterfacePids[0])
 		// fmt.Println("INTERFEJS imaaa PID Averagera:", state.spawnedAveragerPID.Address)
 		state.myPid = msg.YourInterfacePid
@@ -39,15 +39,19 @@ func (state *InterfaceActor) Receive(context actor.Context) {
 		time.Sleep(time.Second * 2)
 		fmt.Println("JA SAM INTERFEJS: " + msg.NizFloatova)
 		for _, pid := range state.queueInterfaces {
+			//fmt.Println(state.queueInterfaces)
 			// fmt.Printf("Index %d: %v\n", index, pid)
-			context.Send(pid, &messages.InterInterfaceWeightsMessage{
-				WeightsIH: msg.WeightsIH,
-				WeightsHH: msg.WeightsHH,
-				WeightsHO: msg.WeightsHO,
-				BiasH:     msg.BiasH,
-				BiasH2:    msg.BiasH2,
-				BiasO:     msg.BiasO,
-			})
+			if pid.Id != state.myPid.Id {
+				fmt.Println(pid)
+				context.Send(pid, &messages.InterInterfaceWeightsMessage{
+					WeightsIH: msg.WeightsIH,
+					WeightsHH: msg.WeightsHH,
+					WeightsHO: msg.WeightsHO,
+					BiasH:     msg.BiasH,
+					BiasH2:    msg.BiasH2,
+					BiasO:     msg.BiasO,
+				})
+			}
 		}
 	case *messages.InterInterfaceWeightsMessage:
 		time.Sleep(time.Second * 2)

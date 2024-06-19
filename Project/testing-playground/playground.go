@@ -93,6 +93,7 @@ func main() {
 	context.Send(trainerPid, &messages.SpawnedInterfacePID{ThePid: interfacePid})
 
 	context.Send(interfacePidRemote, &messages.RemoteIntegerPID{YourInterfacePid: interfacePidRemote, AllInterfacePids: interfacePids})
+	context.Send(interfacePid, &messages.RemoteIntegerPID{YourInterfacePid: interfacePid, AllInterfacePids: interfacePids})
 
 	context.Send(interfacePidRemote, &messages.SpawnedAveragerPID{ThePid: averagerPidRemote})
 	context.Send(averagerPidRemote, &messages.SpawnedTrainerPID{ThePid: trainerPidRemote})
