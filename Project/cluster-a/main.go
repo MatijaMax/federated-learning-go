@@ -19,7 +19,7 @@ func main() {
 
 	system := actor.NewActorSystem()
 
-	config := remote.Configure("localhost", 8090)
+	config := remote.Configure("192.168.43.151", 8090)
 
 	// Configure a cluster on top of the above remote env
 	provider := automanaged.NewWithConfig(1*time.Second, 6332, "192.168.43.81:6331")
@@ -37,15 +37,12 @@ func main() {
 	c.StartMember()
 	defer c.Shutdown(false)
 
-	
-
 	time.Sleep(1 * time.Second)
-	
+
 	//##########################
 
 	context := system.Root
 
-	
 	var averagerPid *actor.PID = nil
 	var trainerPid *actor.PID = nil
 
@@ -65,7 +62,7 @@ func main() {
 			fmt.Println(interfaceGrainPid)
 		}
 		if i == 2 {
-			
+
 		}
 		if i == 3 {
 			props := actor.PropsFromProducer(func() actor.Actor { return &actors.AveragerActor{} })
@@ -91,12 +88,10 @@ func main() {
 
 	context.Send(interfaceGrainPid, &messages.SpawnedAveragerPID{ThePid: averagerPid})
 	context.Send(averagerPid, &messages.SpawnedTrainerPID{ThePid: trainerPid})
-	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/Diabetes2.csv"})
+	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/DiabetesNew2.csv"})
 	context.Send(trainerPid, &messages.SpawnedInterfacePID{ThePid: interfaceGrainPid})
 
 	context.Send(interfaceGrainPid, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPid, AllInterfacePids: interfacePids})
-
-	
 
 	time.Sleep(time.Hour)
 }

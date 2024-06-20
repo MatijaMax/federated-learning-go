@@ -12,12 +12,12 @@ type Hello struct{ Who string }
 
 func main() {
 	system := actor.NewActorSystem()
-	remoteConfig := remote.Configure("192.168.43.81", 8092)
+	remoteConfig := remote.Configure("192.168.43.81", 8091)
 	remoting := remote.NewRemote(system, remoteConfig)
 	remoting.Start()
-	remoting.Register("interfejs2", actor.PropsFromProducer(func() actor.Actor { return &actors.InterfaceActor{} }))
-	remoting.Register("averager2", actor.PropsFromProducer(func() actor.Actor { return &actors.AveragerActor{} }))
-	remoting.Register("trainer2", actor.PropsFromProducer(func() actor.Actor { return &actors.TrainerActor{} }))
+	remoting.Register("interfejs1", actor.PropsFromProducer(func() actor.Actor { return &actors.InterfaceActor{} }))
+	remoting.Register("averager1", actor.PropsFromProducer(func() actor.Actor { return &actors.AveragerActor{} }))
+	remoting.Register("trainer1", actor.PropsFromProducer(func() actor.Actor { return &actors.TrainerActor{} }))
 	// context := system.Root
 
 	// //var interfacePid *actor.PID = nil
