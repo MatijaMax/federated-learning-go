@@ -258,14 +258,14 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
 	nn := NewNeuralNetwork(inputNodes, hiddenNodes, hiddenNodes2, outputNodes)
 
 
-	trainingData := featuresIn[:len(featuresIn)-20]
-	targetData := labelsIn[:len(featuresIn)-20]
+	trainingData := featuresIn[:len(featuresIn)-35]
+	targetData := labelsIn[:len(featuresIn)-35]
 
-	nn.TrainNN(trainingData, targetData, 10, 0.04)
+	nn.TrainNN(trainingData, targetData, 10, 0.05)
 
 
-	validationData := featuresIn[len(featuresIn)-20:]
-	validationLabels := labelsIn[len(labelsIn)-20:]
+	validationData := featuresIn[len(featuresIn)-35:]
+	validationLabels := labelsIn[len(labelsIn)-35:]
 
 	recall := nn.EvaluateRecall(validationData, validationLabels, 1.0)
 	fmt.Printf("Validation Recall nakon 10 epoha: %f\n", recall)
@@ -330,13 +330,13 @@ func TrainAgain(context actor.Context, state *TrainerActor, weightsIH, weightsHH
 
 	nn := NewNeuralNetworkWithWeights(inputNodes, hiddenNodes, hiddenNodes2, outputNodes, weightsIH, weightsHH, weightsHO, biasH, biasH2, biasO)
 
-	trainingData := featuresIn[:len(featuresIn)-20]
-	targetData := labelsIn[:len(featuresIn)-20]
+	trainingData := featuresIn[:len(featuresIn)-35]
+	targetData := labelsIn[:len(featuresIn)-35]
 
-	nn.TrainNN(trainingData, targetData, 10, 0.04)
+	nn.TrainNN(trainingData, targetData, 10, 0.05)
 
-	validationData := featuresIn[len(featuresIn)-20:]
-	validationLabels := labelsIn[len(labelsIn)-20:]
+	validationData := featuresIn[len(featuresIn)-35:]
+	validationLabels := labelsIn[len(labelsIn)-35:]
 
 	recall := nn.EvaluateRecall(validationData, validationLabels, 1.0)
 	fmt.Printf("Validation Recall nakon 10 epoha: %f\n", recall)
@@ -386,7 +386,7 @@ func TrainAgain(context actor.Context, state *TrainerActor, weightsIH, weightsHH
 
 func (nn *NeuralNetwork) EvaluateRecall(inputData [][]float64, targetData [][]float64, positiveLabel float64) float64 {
 	truePositives := 0
-	allPositives := 0
+	falseNegative := 0
 
 	for i := range inputData {
 		inputs := inputData[i]
@@ -402,21 +402,21 @@ func (nn *NeuralNetwork) EvaluateRecall(inputData [][]float64, targetData [][]fl
 			predictedLabel = 1.0
 		}
 
-		if predictedLabel == positiveLabel {
+		if predictedLabel == positiveLabel && positiveLabel == targets[0] {
 			truePositives++
 			// fmt.Println("Dobar bas")
 		}
-		if predictedLabel == targets[0] {
-			allPositives++
+		if predictedLabel != positiveLabel && positiveLabel == targets[0] {
+			falseNegative++
 			// fmt.Println("Dobar")
 		}
 		fmt.Println(predictedLabel, targets[0], finalOutputs[0])
 	}
 
 	recall := 0.0
-	if allPositives > 0 {
-		recall = float64(truePositives) / float64(allPositives)
-		print(truePositives, allPositives)
+	if falseNegative + truePositives > 0 {
+		recall = float64(truePositives) / float64(falseNegative + truePositives)
+		print(truePositives, falseNegative)
 	}
 	return recall
 }

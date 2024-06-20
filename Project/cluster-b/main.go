@@ -22,7 +22,7 @@ func main() {
 	config := remote.Configure("192.168.43.81", 8081)
 
 	// Configure a cluster on top of the above remote env
-	provider := automanaged.NewWithConfig(1*time.Second, 6331, "localhost:6331")
+	provider := automanaged.NewWithConfig(1*time.Second, 6331, "192.168.43.81:6331")
 	// provider, err := etcd.NewWithConfig("/protoactor", clientv3.Config{
 	// 	Endpoints:   []string{"127.0.0.1:2379"},
 	// 	DialTimeout: time.Second * 5,
@@ -81,7 +81,7 @@ func main() {
 
 	context.Send(interfaceGrainPid, &messages.SpawnedAveragerPID{ThePid: averagerPid})
 	context.Send(averagerPid, &messages.SpawnedTrainerPID{ThePid: trainerPid})
-	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/Diabetes1.csv"})
+	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/DiabetesNew1.csv"})
 	context.Send(trainerPid, &messages.SpawnedInterfacePID{ThePid: interfaceGrainPid})
 
 	// context.Send(interfaceGrainPid, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPid, AllInterfacePids: interfacePids})

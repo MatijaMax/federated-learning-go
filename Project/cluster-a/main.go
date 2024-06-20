@@ -89,11 +89,15 @@ func main() {
 
 	context.Send(interfaceGrainPid, &messages.SpawnedAveragerPID{ThePid: averagerPid})
 	context.Send(averagerPid, &messages.SpawnedTrainerPID{ThePid: trainerPid})
-	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/Diabetes2.csv"})
+	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/DiabetesNew2.csv"})
 	context.Send(trainerPid, &messages.SpawnedInterfacePID{ThePid: interfaceGrainPid})
 
+  
 	context.Send(interfaceGrainPid, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPid, AllInterfacePids: interfacePids})
+  
+  //only in new branch
 	context.Send(interfaceGrainPidOther, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPidOther, AllInterfacePids: interfacePids})
+
 
 	time.Sleep(time.Hour)
 }
