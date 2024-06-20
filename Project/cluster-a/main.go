@@ -22,7 +22,7 @@ func main() {
 	config := remote.Configure("localhost", 8090)
 
 	// Configure a cluster on top of the above remote env
-	provider := automanaged.NewWithConfig(1*time.Second, 6332, "localhost:6331")
+	provider := automanaged.NewWithConfig(1*time.Second, 6332, "192.168.43.81:6331")
 	// provider, err := etcd.NewWithConfig("/protoactor", clientv3.Config{
 	// 	Endpoints:   []string{"127.0.0.1:2379"},
 	// 	DialTimeout: time.Second * 1,

@@ -258,14 +258,14 @@ func Train(context actor.Context, state *TrainerActor) []float64 {
 	nn := NewNeuralNetwork(inputNodes, hiddenNodes, hiddenNodes2, outputNodes)
 
 
-	trainingData := featuresIn[:len(featuresIn)-20]
-	targetData := labelsIn[:len(featuresIn)-20]
+	trainingData := featuresIn[:len(featuresIn)-24]
+	targetData := labelsIn[:len(featuresIn)-24]
 
 	nn.TrainNN(trainingData, targetData, 10, 0.04)
 
 
-	validationData := featuresIn[len(featuresIn)-20:]
-	validationLabels := labelsIn[len(labelsIn)-20:]
+	validationData := featuresIn[len(featuresIn)-24:]
+	validationLabels := labelsIn[len(labelsIn)-24:]
 
 	recall := nn.EvaluateRecall(validationData, validationLabels, 1.0)
 	fmt.Printf("Validation Recall nakon 10 epoha: %f\n", recall)
@@ -330,13 +330,13 @@ func TrainAgain(context actor.Context, state *TrainerActor, weightsIH, weightsHH
 
 	nn := NewNeuralNetworkWithWeights(inputNodes, hiddenNodes, hiddenNodes2, outputNodes, weightsIH, weightsHH, weightsHO, biasH, biasH2, biasO)
 
-	trainingData := featuresIn[:len(featuresIn)-20]
-	targetData := labelsIn[:len(featuresIn)-20]
+	trainingData := featuresIn[:len(featuresIn)-24]
+	targetData := labelsIn[:len(featuresIn)-24]
 
 	nn.TrainNN(trainingData, targetData, 10, 0.04)
 
-	validationData := featuresIn[len(featuresIn)-20:]
-	validationLabels := labelsIn[len(labelsIn)-20:]
+	validationData := featuresIn[len(featuresIn)-24:]
+	validationLabels := labelsIn[len(labelsIn)-24:]
 
 	recall := nn.EvaluateRecall(validationData, validationLabels, 1.0)
 	fmt.Printf("Validation Recall nakon 10 epoha: %f\n", recall)
