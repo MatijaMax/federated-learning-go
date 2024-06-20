@@ -84,7 +84,7 @@ func main() {
 	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/DiabetesNew1.csv"})
 	context.Send(trainerPid, &messages.SpawnedInterfacePID{ThePid: interfaceGrainPid})
 
-	context.Send(interfaceGrainPid, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPid, AllInterfacePids: interfacePids})
+	// context.Send(interfaceGrainPid, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPid, AllInterfacePids: interfacePids})
 
 	// Run till a signal comes
 	finish := make(chan os.Signal, 1)

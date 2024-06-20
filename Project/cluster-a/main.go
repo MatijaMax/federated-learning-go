@@ -47,6 +47,7 @@ func main() {
 	var trainerPid *actor.PID = nil
 
 	var interfaceGrainPid *actor.PID = nil
+	var interfaceGrainPidOther *actor.PID = nil
 	var interfacePids []*actor.PID
 
 	// Spawn three local actors
@@ -70,7 +71,7 @@ func main() {
 			averagerPid = pid
 		}
 		if i == 4 {
-			interfaceGrainPidOther := cluster.GetCluster(system).Get("remote-interface-2", "Interface")
+			interfaceGrainPidOther = cluster.GetCluster(system).Get("remote-interface-2", "Interface")
 			interfacePids = append(interfacePids, interfaceGrainPidOther)
 			fmt.Println("EEEEEEEEEEEEEEEE")
 			fmt.Println(interfaceGrainPidOther)
@@ -91,7 +92,12 @@ func main() {
 	context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/DiabetesNew2.csv"})
 	context.Send(trainerPid, &messages.SpawnedInterfacePID{ThePid: interfaceGrainPid})
 
+  
 	context.Send(interfaceGrainPid, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPid, AllInterfacePids: interfacePids})
+  
+  //only in new branch
+	context.Send(interfaceGrainPidOther, &messages.RemoteIntegerPID{YourInterfacePid: interfaceGrainPidOther, AllInterfacePids: interfacePids})
+
 
 	time.Sleep(time.Hour)
 }
