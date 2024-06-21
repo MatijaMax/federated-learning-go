@@ -13,7 +13,7 @@ type Hello struct{ Who string }
 
 func main() {
 	system := actor.NewActorSystem()
-	remoteConfig := remote.Configure("localhost", 8091)
+	remoteConfig := remote.Configure("192.168.43.81", 8091)
 	remoting := remote.NewRemote(system, remoteConfig)
 	remoting.Start()
 	decider := func(reason interface{}) actor.Directive {

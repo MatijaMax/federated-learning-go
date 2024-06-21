@@ -16,7 +16,7 @@ type Hello struct{ Who string }
 
 func main() {
 	system := actor.NewActorSystem()
-	remoteConfig := remote.Configure("127.0.0.1", 8090)
+	remoteConfig := remote.Configure("192.168.43.151", 8090)
 	remoting := remote.NewRemote(system, remoteConfig)
 	remoting.Start()
 	
@@ -46,7 +46,7 @@ func main() {
 			
 		}
 		if i == 1 {
-			spawnResponse, err := remoting.SpawnNamed("127.0.0.1:8091", "myactor1", "interfejs1", time.Second*12)
+			spawnResponse, err := remoting.SpawnNamed("192.168.43.81:8091", "myactor1", "interfejs1", time.Second*12)
 			if err != nil {
 				panic(err)
 				return
