@@ -31,6 +31,29 @@ func (state *InterfaceActor) Receive(context actor.Context) {
 		state.queueInterfaces = msg.AllInterfacePids
 
 	case *messages.Echo:
+		var averagerPid *actor.PID = nil
+		var trainerPid *actor.PID = nil
+		for i := 0; i < 3; i++ {
+		if i == 1 {
+					props := actor.PropsFromProducer(func() actor.Actor { return &AveragerActor{} })
+					pid := context.Spawn(props)
+					averagerPid = pid
+					fmt.Print("AVERAGER PID: ")
+					fmt.Println(averagerPid)
+
+				}
+				if i == 2 {
+					props := actor.PropsFromProducer(func() actor.Actor { return &TrainerActor{} })
+					pid := context.Spawn(props)
+					trainerPid = pid
+					fmt.Print("TRENER PID: ")
+					fmt.Println(trainerPid)
+				}
+		}
+		context.Send(state.myPid, &messages.SpawnedAveragerPID{ThePid: averagerPid})
+		context.Send(averagerPid, &messages.SpawnedTrainerPID{ThePid: trainerPid})
+		context.Send(trainerPid, &messages.SpawnedAveragerPID{ThePid: averagerPid, DataPath: "../dataset/DiabetesNew1.csv"})
+		context.Send(trainerPid, &messages.SpawnedInterfacePID{ThePid: state.myPid})
 		fmt.Printf(msg.GetMessage() + "\n")
 	case *messages.SpawnedAveragerPID:
 		fmt.Println("INTERFEJS dobavio PID Averagera:", msg.ThePid)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"project/actors"
 	"time"
 
@@ -15,17 +16,17 @@ func main() {
 	remoteConfig := remote.Configure("192.168.43.81", 8091)
 	remoting := remote.NewRemote(system, remoteConfig)
 	remoting.Start()
-	remoting.Register("interfejs1", actor.PropsFromProducer(func() actor.Actor { return &actors.InterfaceActor{} }))
+	decider := func(reason interface{}) actor.Directive {
+		fmt.Println("handling failure for child")
+		return actor.StopDirective
+	}
+	supervisor := actor.NewOneForOneStrategy(10, 1000, decider)
+	
+	remoting.Register("interfejs1", actor.PropsFromProducer(func() actor.Actor { return &actors.InterfaceActor{} },actor.WithSupervisor(supervisor)))
 	remoting.Register("averager1", actor.PropsFromProducer(func() actor.Actor { return &actors.AveragerActor{} }))
 	remoting.Register("trainer1", actor.PropsFromProducer(func() actor.Actor { return &actors.TrainerActor{} }))
-	// context := system.Root
-
-	// //var interfacePid *actor.PID = nil
-	// var averagerPid *actor.PID = nil
-	// var trainerPid *actor.PID = nil
-	// var interfacePid *actor.PID = nil
-
-	// // Spawn three local actors
+	
+	
 
 	time.Sleep(time.Hour)
 }
